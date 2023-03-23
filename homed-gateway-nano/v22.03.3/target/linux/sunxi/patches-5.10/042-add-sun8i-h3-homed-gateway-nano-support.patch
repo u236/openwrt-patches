@@ -1,0 +1,170 @@
+--- a/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
++++ b/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
+@@ -40,15 +40,68 @@
+  *     OTHER DEALINGS IN THE SOFTWARE.
+  */
+ 
+-#include "sun8i-h3-nanopi.dtsi"
++/dts-v1/;
++
++#include "sun8i-h3.dtsi"
++#include "sunxi-common-regulators.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
+ 
+ / {
+-	model = "FriendlyARM NanoPi NEO";
++	model = "HOMEd Gateway Nano";
+ 	compatible = "friendlyarm,nanopi-neo", "allwinner,sun8i-h3";
+-};
+ 
+-&ehci0 {
+-	status = "okay";
++	aliases {
++		mmc0 = "/soc/mmc@1c0f000";
++		mmc2 = "/soc/mmc@1c11000";
++		i2c0 = "/soc/i2c@1c2ac00";
++		i2c2 = "/soc/i2c@1c2b400";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		status {
++			label = "nanopi:green:status";
++			gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>; /* PA10 */
++			linux,default-trigger = "heartbeat";
++		};
++
++		pwr {
++			label = "nanopi:red:pwr";
++			gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>; /* PL10 */
++			default-state = "on";
++		};
++
++		act {
++			label = "amber:act";
++			gpios = <&pio 6 8 GPIO_ACTIVE_HIGH>; /* PG8 */
++			default-state = "off";
++		};
++
++		zb {
++			label = "blue:zb";
++			gpios = <&pio 6 9 GPIO_ACTIVE_HIGH>; /* PG9 */
++			default-state = "off";
++		};
++	};
++
++	gpio-export {
++		compatible = "gpio-export";
++
++		boot {
++			gpio-export,name = "zb:boot";
++			gpio-export,output = <0>;
++			gpios = <&pio 0 2 GPIO_ACTIVE_HIGH>; /* PA2 */
++		};
++
++		reset {
++			gpio-export,name = "zb:reset";
++			gpio-export,output = <0>;
++			gpios = <&pio 0 6 GPIO_ACTIVE_HIGH>; /* PA6 */
++		};
++	};
+ };
+ 
+ &emac {
+@@ -58,15 +111,92 @@
+ 	status = "okay";
+ };
+ 
++&mmc0 {
++	vmmc-supply = <&reg_vcc3v3>;
++	bus-width = <4>;
++	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
++	status = "okay";
++};
++
++&mmc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc2_8bit_pins>;
++	vmmc-supply = <&reg_vcc3v3>;
++	bus-width = <8>;
++	non-removable;
++	cap-mmc-hw-reset;
++	status = "okay";
++};
++
++&mmc2_8bit_pins {
++	drive-strength = <40>;
++	bias-pull-up;
++};
++
++&i2c0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c0_pins>;
++	status = "okay";
++
++	ds2482: ds2482@18 {
++		compatible = "dallas,ds2482";
++		reg = <0x18>;
++		status = "okay";
++	};
++};
++
++&i2c2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2_pins>;
++	status = "okay";
++
++	ds1307: ds1307@68 {
++		compatible = "dallas,ds1307";
++		reg = <0x68>;
++		status = "okay";
++	};
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_pa_pins>;
++	status = "okay";
++};
++
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>;
++	status = "okay";
++};
++
++&uart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart2_pins>;
++	status = "okay";
++};
++
++&ehci0 {
++	status = "okay";
++};
++
++&ehci3 {
++	status = "okay";
++};
++
+ &ohci0 {
+ 	status = "okay";
+ };
+ 
+-&usb_otg {
++&ohci3 {
+ 	status = "okay";
++};
++
++&usb_otg {
+ 	dr_mode = "peripheral";
++	status = "okay";
+ };
+ 
+ &usbphy {
+ 	usb0_id_det-gpios = <&pio 6 12 GPIO_ACTIVE_HIGH>; /* PG12 */
++	status = "okay";
+ };
