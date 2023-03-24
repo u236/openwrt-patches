@@ -20,15 +20,15 @@ $ make menuconfig
 
 Select target profile:
 ```
-Target System > Allwinner A1x/A20/A3x/H3/H5/R40
-Subtarget > Allwinner A20/A3x/H3/R40
-Target Profile > FriendlyARM NanoPi NEO
+    Target System > Allwinner A1x/A20/A3x/H3/H5/R40
+    Subtarget > Allwinner A20/A3x/H3/R40
+    Target Profile > FriendlyARM NanoPi NEO
 ```
 
 Configure target images:
 ```
-Target Images > Boot (SD Card) filesystem partition size (in MB) > 8
-Target Images > Root filesystem partition size (in MB) > 32
+    Target Images > Boot (SD Card) filesystem partition size (in MB) > 8
+    Target Images > Root filesystem partition size (in MB) > 32
 ```
 
 Configure built-in packakes:
@@ -50,10 +50,13 @@ Enable DS2482 driver:
 <*> Device Drivers > Dallas 1-wire support > 1-wire Bus Masters > Maxim DS2482 I2C to 1-Wire bridge
 ```
 
-Enable DS1307 driver:
+Enable DS1307 driver and set it as default RTC:
 ```
 <*> Device Drivers > Real Time Clock
-<*> Device Drivers > Real Time Clock > Dallas Maxim DS1307/37/38/39/40/41
+    Device Drivers > Real Time Clock > RTC used to set the system time > rtc1
+    Device Drivers > Real Time Clock > RTC used to synchronize NTP adjustment > rtc1
+<*> Device Drivers > Real Time Clock > Dallas Maxim DS1307/37/38/39/40/41...
+[*] Device Drivers > Real Time Clock > Century bit support for rtc-ds1307
 ```
 
 Disable PC-Style CMOS:
@@ -61,7 +64,7 @@ Disable PC-Style CMOS:
 < > Device Drivers > Real Time Clock > PC-Style 'CMOS'
 ```
 
-### Build OpenWRT:
+### 5. Build OpenWRT:
 ```
 $ make -j $(nproc)
 ```
