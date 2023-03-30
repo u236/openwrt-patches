@@ -4,7 +4,7 @@ $ git clone https://github.com/u236/openwrt-patches.git
 $ git clone https://github.com/openwrt/openwrt.git
 $ cd openwrt
 $ git checkout v22.03.3
-$ cp -r ../openwrt-patches/homed-gateway-nano/v22.03.3/* .
+$ cp -rT ../openwrt-patches/homed-gateway-nano/v22.03.3 .
 ```
 
 ### 2. Update OPKG feeds:
@@ -13,15 +13,20 @@ $ ./scripts/feeds update -a
 $ ./scripts/feeds install -a
 ```
 
-### 3. Target and packages configuration:
+### 3. Build toolchain and kernel:
+```
+$ make defconfig
+$ make -j $(nproc) toolchain/install
+$ make -j $(nproc) target/linux/compile
+```
+
+### 4. OpenWRT image configuration:
 ```
 $ make menuconfig
 ```
 
 Select target profile:
 ```
-    Target System > Allwinner A1x/A20/A3x/H3/H5/R40
-    Subtarget > Allwinner A20/A3x/H3/R40
     Target Profile > FriendlyARM NanoPi NEO
 ```
 
@@ -31,40 +36,24 @@ Configure target images:
     Target Images > Root filesystem partition size (in MB) > 32
 ```
 
-Configure built-in packakes:
+Configure built-in kernel modules:
+```
+<*> Kernel Modules > Other modules > kmod-rtc-ds1307
+<*> Kernel Modules > W1 support > kmod-w1
+<*> Kernel Modules > W1 support > kmod-w1-master-ds2482
+<*> Kernel Modules > W1 support > kmod-w1-slave-therm
+```
+
+Configure built-in packakes (optional):
 ```
 <*> LuCI > Collections > luci
 <*> Utilities > Terminal > picocom
 <*> Utilities > mc
+    ...
+    Something else
 ```
 
-### 4. Kernel configuration:
-```
-$ make -j $(nproc) kernel_menuconfig
-```
-
-Enable DS2482 driver:
-```
-<*> Device Drivers > Dallas 1-wire support
-<*> Device Drivers > Dallas 1-wire support > Userspace communication over connector
-<*> Device Drivers > Dallas 1-wire support > 1-wire Bus Masters > Maxim DS2482 I2C to 1-Wire bridge
-```
-
-Enable DS1307 driver and set it as default RTC:
-```
-<*> Device Drivers > Real Time Clock
-    Device Drivers > Real Time Clock > RTC used to set the system time > rtc1
-    Device Drivers > Real Time Clock > RTC used to synchronize NTP adjustment > rtc1
-<*> Device Drivers > Real Time Clock > Dallas Maxim DS1307/37/38/39/40/41...
-[*] Device Drivers > Real Time Clock > Century bit support for rtc-ds1307
-```
-
-Disable PC-Style CMOS:
-```
-< > Device Drivers > Real Time Clock > PC-Style 'CMOS'
-```
-
-### 5. Build OpenWRT:
+### 5. Build OpenWRT image:
 ```
 $ make -j $(nproc)
 ```
