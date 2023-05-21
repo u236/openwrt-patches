@@ -1,0 +1,12 @@
+. /lib/functions.sh
+
+hostname="HOMEd-GW-Pico"
+
+uci set system.@system[0].hostname=${hostname}
+uci commit system
+
+uci set wireless.@wifi-iface[0].ssid=${hostname}
+uci set wireless.radio0.disabled='0'
+uci commit wireless
+
+wifi
