@@ -1,6 +1,6 @@
 --- a/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
 +++ b/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
-@@ -40,15 +40,70 @@
+@@ -40,15 +40,73 @@
   *     OTHER DEALINGS IN THE SOFTWARE.
   */
  
@@ -26,33 +26,36 @@
 +		mmc2 = "/soc/mmc@1c11000";
 +		i2c0 = "/soc/i2c@1c2ac00";
 +		i2c2 = "/soc/i2c@1c2b400";
-+		rtc0 = "/soc/i2c@1c2ac00/ds1307@68";
++		rtc0 = "/soc/i2c@1c2b400/ds1307@68";
 +		rtc1 = "/soc/rtc@1f00000";
++		led-boot = &led_act;
++		led-failsafe = &led_act;
++		led-upgrade = &led_act;
 +	};
 +
 +	leds {
 +		compatible = "gpio-leds";
 +
-+		status {
++		led_status: status {
 +			label = "nanopi:green:status";
 +			gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>; /* PA10 */
 +			linux,default-trigger = "heartbeat";
 +		};
 +
-+		pwr {
++		led_power: power {
 +			label = "nanopi:red:pwr";
 +			gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>; /* PL10 */
 +			default-state = "on";
 +		};
 +
-+		act {
++		led_act: act {
 +			label = "amber:act";
 +			gpios = <&pio 6 8 GPIO_ACTIVE_HIGH>; /* PG8 */
 +			default-state = "off";
 +		};
 +
-+		zb {
-+			label = "blue:zb";
++		led_zb: zb {
++			label = "blue:zb"; 
 +			gpios = <&pio 6 9 GPIO_ACTIVE_HIGH>; /* PG9 */
 +			default-state = "off";
 +		};
@@ -76,7 +79,7 @@
  };
  
  &emac {
-@@ -58,15 +113,92 @@
+@@ -58,15 +116,92 @@
  	status = "okay";
  };
  

@@ -40,9 +40,6 @@ Configure built-in kernel modules:
 ```
 /* add wifi driver here */
 <*> Kernel Modules > Other modules > kmod-rtc-ds1307
-<*> Kernel Modules > W1 support > kmod-w1
-<*> Kernel Modules > W1 support > kmod-w1-master-ds2482
-<*> Kernel Modules > W1 support > kmod-w1-slave-therm
 ```
 
 Configure built-in packakes (optional):

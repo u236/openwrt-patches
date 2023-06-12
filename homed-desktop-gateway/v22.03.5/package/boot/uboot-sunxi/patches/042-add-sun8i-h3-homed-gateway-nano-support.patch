@@ -1,0 +1,102 @@
+--- a/arch/arm/dts/sun8i-h3-nanopi-neo.dts
++++ b/arch/arm/dts/sun8i-h3-nanopi-neo.dts
+@@ -40,15 +40,25 @@
+  *     OTHER DEALINGS IN THE SOFTWARE.
+  */
+ 
+-#include "sun8i-h3-nanopi.dtsi"
++/dts-v1/;
++
++#include "sun8i-h3.dtsi"
++#include "sunxi-common-regulators.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
+ 
+ / {
+-	model = "FriendlyARM NanoPi NEO";
++	model = "HOMEd Desktop Gateway";
+ 	compatible = "friendlyarm,nanopi-neo", "allwinner,sun8i-h3";
+-};
+ 
+-&ehci0 {
+-	status = "okay";
++	aliases {
++		serial0 = "/soc/serial@1c28000";
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
+ };
+ 
+ &emac {
+@@ -58,15 +68,50 @@
+ 	status = "okay";
+ };
+ 
++&mmc0 {
++	vmmc-supply = <&reg_vcc3v3>;
++	bus-width = <4>;
++	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
++	status = "okay";
++};
++
++&mmc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc2_8bit_pins>;
++	vmmc-supply = <&reg_vcc3v3>;
++	bus-width = <8>;
++	non-removable;
++	cap-mmc-hw-reset;
++	status = "okay";
++};
++
++&mmc2_8bit_pins {
++	drive-strength = <40>;
++	bias-pull-up;
++};
++
++&ehci0 {
++	status = "okay";
++};
++
++&ehci3 {
++	status = "okay";
++};
++
+ &ohci0 {
+ 	status = "okay";
+ };
+ 
+-&usb_otg {
++&ohci3 {
+ 	status = "okay";
++};
++
++&usb_otg {
+ 	dr_mode = "peripheral";
++	status = "okay";
+ };
+ 
+ &usbphy {
+ 	usb0_id_det-gpios = <&pio 6 12 GPIO_ACTIVE_HIGH>; /* PG12 */
++	status = "okay";
+ };
+--- a/configs/nanopi_neo_defconfig
++++ b/configs/nanopi_neo_defconfig
+@@ -3,10 +3,12 @@
+ CONFIG_SPL=y
+ CONFIG_MACH_SUN8I_H3=y
+ CONFIG_DRAM_CLK=408
+-# CONFIG_VIDEO_DE2 is not set
+-# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
+ CONFIG_CONSOLE_MUX=y
+ CONFIG_DEFAULT_DEVICE_TREE="sun8i-h3-nanopi-neo"
+ CONFIG_SUN8I_EMAC=y
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_OHCI_HCD=y
++CONFIG_AUTOBOOT_KEYED=y
++CONFIG_AUTOBOOT_PROMPT="Press 'x' to stop autoboot...\n"
++CONFIG_AUTOBOOT_STOP_STR="x"
++CONFIG_MMC_SUNXI_SLOT_EXTRA=2
