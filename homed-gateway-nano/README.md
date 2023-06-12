@@ -4,7 +4,7 @@ $ git clone https://github.com/u236/openwrt-patches.git
 $ git clone https://github.com/openwrt/openwrt.git
 $ cd openwrt
 $ git checkout v22.03.5
-$ cp -rT ../openwrt-patches/homed-gateway-nano/v22.03.3 .
+$ cp -rT ../openwrt-patches/homed-gateway-nano/v22.03.5 .
 ```
 
 ### 2. Update OPKG feeds:
@@ -38,17 +38,19 @@ Configure target images:
 
 Configure built-in kernel modules:
 ```
-/* add wifi driver here */
 <*> Kernel Modules > Other modules > kmod-rtc-ds1307
 <*> Kernel Modules > W1 support > kmod-w1
 <*> Kernel Modules > W1 support > kmod-w1-master-ds2482
 <*> Kernel Modules > W1 support > kmod-w1-slave-therm
+<*> Kernel Modules > Wireless Drivers > kmod-mt7601u
 ```
 
 Configure built-in packakes (optional):
 ```
 /* add wifi tools here */
 <*> LuCI > Collections > luci
+<*> Network > WirelessAPD > hostapd
+<*> Network > WirelessAPD > wpa-supplicant
 <*> Utilities > Terminal > picocom
 <*> Utilities > mc
     ...
