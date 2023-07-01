@@ -79,7 +79,7 @@
  };
  
  &emac {
-@@ -58,15 +116,92 @@
+@@ -58,15 +116,100 @@
  	status = "okay";
  };
  
@@ -151,6 +151,10 @@
 +	status = "okay";
 +};
 +
++&ehci1 {
++	status = "okay";
++};
++
 +&ehci3 {
 +	status = "okay";
 +};
@@ -160,6 +164,10 @@
  };
  
 -&usb_otg {
++&ohci1 {
++	status = "okay";
++};
++
 +&ohci3 {
  	status = "okay";
 +};
