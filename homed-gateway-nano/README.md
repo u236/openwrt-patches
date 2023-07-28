@@ -30,12 +30,6 @@ Select target profile:
     Target Profile > FriendlyARM NanoPi NEO
 ```
 
-Configure target images:
-```
-    Target Images > Boot (SD Card) filesystem partition size (in MB) > 8
-    Target Images > Root filesystem partition size (in MB) > 32
-```
-
 Configure built-in kernel modules:
 ```
 <*> Kernel Modules > Other modules > kmod-rtc-ds1307
@@ -47,7 +41,6 @@ Configure built-in kernel modules:
 
 Configure built-in packakes (optional):
 ```
-/* add wifi tools here */
 <*> LuCI > Collections > luci
 <*> Network > WirelessAPD > hostapd
 <*> Network > WirelessAPD > wpa-supplicant
