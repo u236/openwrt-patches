@@ -97,7 +97,7 @@ define Device/homed_gw-pro
   SOC := rk3566
   DEVICE_DTS := rockchip/rk3566-homed-gw-pro
   UBOOT_DEVICE_NAME := homed-gw-pro-rk3566
-  DEVICE_PACKAGES := kmod-brcmfmac kmod-rtc-ds1307 kmod-w1
+  DEVICE_PACKAGES := kmod-brcmfmac kmod-rtc-ds1307
 endef
 TARGET_DEVICES += homed_gw-pro
 
