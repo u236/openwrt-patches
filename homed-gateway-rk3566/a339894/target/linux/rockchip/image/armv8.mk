@@ -85,7 +85,7 @@ define Device/homed_gw-black
   DEVICE_VENDOR := HOMEd
   DEVICE_MODEL := Gateway Black
   SOC := rk3566
-  DEVICE_DTS := rockchip/rk3566-homed-gw-pro
+  DEVICE_DTS := rockchip/rk3566-homed-gw-black
   UBOOT_DEVICE_NAME := homed-gw-black-rk3566
   DEVICE_PACKAGES := kmod-brcmfmac kmod-rtc-ds1307
 endef
