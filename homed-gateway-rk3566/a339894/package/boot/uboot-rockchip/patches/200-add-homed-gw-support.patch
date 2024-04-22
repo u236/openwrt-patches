@@ -191,7 +191,7 @@
 +};
 --- /dev/null
 +++ b/arch/arm/dts/rk3566-homed-gw-black.dts
-@@ -0,0 +1,409 @@
+@@ -0,0 +1,410 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/leds/common.h>
@@ -276,6 +276,7 @@
 +
 +	tx_delay = <0x30>;
 +	rx_delay = <0x10>;
++	max-speed = <100>;
 +};
 +
 +&i2c0 {
@@ -603,7 +604,7 @@
 +};
 --- /dev/null
 +++ b/arch/arm/dts/rk3566-homed-gw-pro.dts
-@@ -0,0 +1,409 @@
+@@ -0,0 +1,410 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/leds/common.h>
@@ -688,6 +689,7 @@
 +
 +	tx_delay = <0x30>;
 +	rx_delay = <0x10>;
++	max-speed = <100>;
 +};
 +
 +&i2c0 {
