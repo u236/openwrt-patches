@@ -505,7 +505,7 @@
 +#include "rk3566.dtsi"
 +
 +/ {
-+	model = "HOMEd Gateway Pro";
++	model = "HOMEd Gateway PRO";
 +	compatible = "homed,homed-gw-pro", "rockchip,rk3566";
 +
 +	aliases {
