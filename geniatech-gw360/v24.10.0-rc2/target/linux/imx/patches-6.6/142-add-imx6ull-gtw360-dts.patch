@@ -10,7 +10,7 @@
  	imx6ull-myir-mys-6ulx-eval.dtb \
 --- a/arch/arm/boot/dts/nxp/imx/imx6ull-gtw360.dts
 +++ b/arch/arm/boot/dts/nxp/imx/imx6ull-gtw360.dts
-@@ -0,0 +1,266 @@
+@@ -0,0 +1,272 @@
 +/dts-v1/;
 +
 +#include <dt-bindings/input/input.h>
@@ -79,6 +79,12 @@
 +			gpio-export,name = "zigbee-reset";
 +			gpio-export,output = <0x01>;
 +			gpios = <&gpio1 5 GPIO_ACTIVE_HIGH>;
++		};
++
++		zigbee_boot {
++			gpio-export,name = "zigbee-boot";
++			gpio-export,output = <0x01>;
++			gpios = <&gpio5 4 GPIO_ACTIVE_HIGH>;
 +		};
 +	};
 +
