@@ -7,7 +7,7 @@ $ git checkout v22.03.5
 $ cp -rT ../openwrt-patches/perenio-peacg01/v22.03.5 .
 ```
 
-### 2. Update OPKG feeds:
+### 2. Update feeds:
 ```
 $ ./scripts/feeds update -a
 $ ./scripts/feeds install -a
@@ -32,6 +32,7 @@ Configure built-in kernel modules:
 Configure built-in packakes (optional):
 ```
 <*> LuCI > Collections > luci
+<*> Network > WirelessAPD > wpad
 <*> Utilities > mc
     ...
     Something else

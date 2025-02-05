@@ -3,8 +3,8 @@
 $ git clone https://github.com/u236/openwrt-patches.git
 $ git clone https://github.com/openwrt/openwrt.git
 $ cd openwrt
-$ git checkout v22.03.5
-$ cp -rT ../openwrt-patches/homed-gateway-pico/v22.03.5 .
+$ git checkout v24.10.0
+$ cp -rT ../openwrt-patches/homed-gateway-rk3566/v24.10.0 .
 ```
 
 ### 2. Update feeds:
@@ -20,18 +20,16 @@ $ make menuconfig
 
 Select target profile:
 ```
-    Target Profile > HOMEd Gateway Pico
-```
-
-Configure built-in kernel module:
-```
-<*> Kernel Modules > Other modules > kmod-sdhci-mt7620
+    Target Profile > HOMEd Gateway Black/Pro
 ```
 
 Configure built-in packakes:
 ```
 <*> LuCI > Collections > luci
 <*> Network > WirelessAPD > wpad
+<*> Utilities > Disc > parted
+<*> Utilities > Filesystem > resize2fs
+<*> Utilities > Filesystem > tune2fs
 <*> Utilities > Terminal > picocom
 <*> Utilities > mc
     ...

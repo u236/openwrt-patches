@@ -3,8 +3,8 @@
 $ git clone https://github.com/u236/openwrt-patches.git
 $ git clone https://github.com/openwrt/openwrt.git
 $ cd openwrt
-$ git checkout v22.03.5
-$ cp -rT ../openwrt-patches/homed-gateway-pico/v22.03.5 .
+$ git checkout v24.10.0
+$ cp -rT ../openwrt-patches/geniatech-gw360/v24.10.0 .
 ```
 
 ### 2. Update feeds:
@@ -20,19 +20,19 @@ $ make menuconfig
 
 Select target profile:
 ```
-    Target Profile > HOMEd Gateway Pico
+    Target Profile > Geniatech GTW360
 ```
 
-Configure built-in kernel module:
+Configure built-in kernel modules:
 ```
-<*> Kernel Modules > Other modules > kmod-sdhci-mt7620
+<*> Kernel Modules > Other modules > kmod-rtc-ds1307
+<*> Kernel Modules > Wireless Drivers > kmod-mt7601u
 ```
 
-Configure built-in packakes:
+Configure built-in packakes (optional):
 ```
 <*> LuCI > Collections > luci
 <*> Network > WirelessAPD > wpad
-<*> Utilities > Terminal > picocom
 <*> Utilities > mc
     ...
     Something else
