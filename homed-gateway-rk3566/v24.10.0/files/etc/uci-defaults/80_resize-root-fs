@@ -1,0 +1,7 @@
+mount -o remount,ro /
+parted -s /dev/mmcblk0 resizepart 2 100%
+tune2fs -O ^resize_inode /dev/mmcblk0p2
+fsck.ext4 -y /dev/mmcblk0p2
+mount -o remount,rw /
+resize2fs /dev/mmcblk0p2
+reboot
