@@ -130,7 +130,6 @@ define Device/homed_gw-black
   SOC := rk3566
   DEVICE_DTS := rockchip/rk3566-homed-gw-black
   UBOOT_DEVICE_NAME := homed-gw-black-rk3566
-  DEVICE_PACKAGES := kmod-brcmfmac
 endef
 TARGET_DEVICES += homed_gw-black
 
@@ -140,7 +139,6 @@ define Device/homed_gw-pro
   SOC := rk3566
   DEVICE_DTS := rockchip/rk3566-homed-gw-pro
   UBOOT_DEVICE_NAME := homed-gw-pro-rk3566
-  DEVICE_PACKAGES := kmod-brcmfmac kmod-w1 kmod-w1-master-ds2482 kmod-w1-slave-therm
 endef
 TARGET_DEVICES += homed_gw-pro
 

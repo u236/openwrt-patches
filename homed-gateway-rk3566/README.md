@@ -23,6 +23,19 @@ Select target profile:
     Target Profile > HOMEd Gateway Black/Pro
 ```
 
+Configure built-in kernel modules (Gateway Black):
+```
+<*> Kernel Modules > Wireless Drivers > kmod-brcmfmac
+```
+
+Configure built-in kernel modules (Gateway Pro):
+```
+<*> Kernel Modules > W1 support > kmod-w1
+<*> Kernel Modules > W1 support > kmod-w1-master-ds2482
+<*> Kernel Modules > W1 support > kmod-w1-slave-therm
+<*> Kernel Modules > Wireless Drivers > kmod-brcmfmac
+```
+
 Configure built-in packakes:
 ```
 <*> LuCI > Collections > luci
