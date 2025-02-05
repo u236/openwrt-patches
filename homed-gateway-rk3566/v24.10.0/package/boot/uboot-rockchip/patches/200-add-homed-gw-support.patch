@@ -189,7 +189,7 @@
 +
 +/ {
 +	model = "HOMEd Gateway Black";
-+	compatible = "homed,homed-gw-black", "rockchip,rk3566";
++	compatible = "homed,gw-black", "rockchip,rk3566";
 +
 +	aliases {
 +		ethernet1 = &gmac1;
@@ -602,7 +602,7 @@
 +
 +/ {
 +	model = "HOMEd Gateway Pro";
-+	compatible = "homed,homed-gw-pro", "rockchip,rk3566";
++	compatible = "homed,gw-pro", "rockchip,rk3566";
 +
 +	aliases {
 +		ethernet1 = &gmac1;

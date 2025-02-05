@@ -11,7 +11,7 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-pinenote-v1.2.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3566-homed-gw-black.dts
-@@ -0,0 +1,485 @@
+@@ -0,0 +1,487 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/leds/common.h>
@@ -20,7 +20,7 @@
 +
 +/ {
 +	model = "HOMEd Gateway Black";
-+	compatible = "homed,homed-gw-black", "rockchip,rk3566";
++	compatible = "homed,gw-black", "rockchip,rk3566";
 +
 +	aliases {
 +		ethernet1 = &gmac1;
@@ -379,6 +379,8 @@
 +};
 +
 +&i2c2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2m1_xfer>;
 +	status = "okay";
 +
 +	rtc: rtc@68 {
@@ -499,7 +501,7 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3566-homed-gw-pro.dts
-@@ -0,0 +1,511 @@
+@@ -0,0 +1,513 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/leds/common.h>
@@ -508,7 +510,7 @@
 +
 +/ {
 +	model = "HOMEd Gateway Pro";
-+	compatible = "homed,homed-gw-pro", "rockchip,rk3566";
++	compatible = "homed,gw-pro", "rockchip,rk3566";
 +
 +	aliases {
 +		ethernet1 = &gmac1;
@@ -873,6 +875,8 @@
 +};
 +
 +&i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2m1_xfer>;
 +	status = "okay";
 +
 +	w1: w1@18 {
