@@ -11,7 +11,7 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-pinenote-v1.2.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3566-homed-gw-black.dts
-@@ -0,0 +1,483 @@
+@@ -0,0 +1,485 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/leds/common.h>
@@ -24,6 +24,8 @@
 +
 +	aliases {
 +		ethernet1 = &gmac1;
++		led-boot = &led_act;
++		led-failsafe = &led_act;
 +		mmc0 = &sdhci;
 +		mmc1 = &sdmmc0;
 +	};
@@ -497,7 +499,7 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3566-homed-gw-pro.dts
-@@ -0,0 +1,509 @@
+@@ -0,0 +1,511 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/leds/common.h>
@@ -510,6 +512,8 @@
 +
 +	aliases {
 +		ethernet1 = &gmac1;
++		led-boot = &led_act;
++		led-failsafe = &led_act;
 +		mmc0 = &sdhci;
 +		mmc1 = &sdmmc0;
 +	};
