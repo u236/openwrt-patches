@@ -1,0 +1,44 @@
+/dts-v1/;
+
+/ {
+    description = "Geniatech GTW360 OpenWRT FIT Image";
+    #address-cells = <1>;
+
+    images {
+        kernel {
+            description = "Linux Kernel";
+            data = /incbin/("./openwrt/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-imx_cortexa7/zImage");
+            type = "kernel";
+            arch = "arm";
+            os = "linux";
+            compression = "none";
+            load = <0x80800000>;
+            entry = <0x80800000>;
+            hash {
+                algo = "sha256";
+            };
+        };
+        fdt {
+            description = "Device Tree";
+            data = /incbin/("./openwrt/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-imx_cortexa7/image-imx6ull-gtw360.dtb");
+            type = "flat_dt";
+            arch = "arm";
+            compression = "none";
+            hash {
+                algo = "sha256";
+            };
+        };
+    };
+
+    configurations {
+        default = "standard";
+        standard {
+            description = "Standard Boot";
+            kernel = "kernel";
+            fdt = "fdt";
+            hash {
+                algo = "sha256";
+            };
+        };
+    };
+};
