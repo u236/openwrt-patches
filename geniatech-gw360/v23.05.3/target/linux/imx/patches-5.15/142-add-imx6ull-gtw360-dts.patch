@@ -10,7 +10,7 @@
  	imx6ull-phytec-segin-ff-rdk-nand.dtb \
 --- a/arch/arm/boot/dts/imx6ull-gtw360.dts
 +++ b/arch/arm/boot/dts/imx6ull-gtw360.dts
-@@ -0,0 +1,272 @@
+@@ -0,0 +1,268 @@
 +/dts-v1/;
 +
 +#include <dt-bindings/input/input.h>
@@ -225,10 +225,6 @@
 +&usbotg2 {
 +	disable-over-current;
 +	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usbotg1 {
 +	status = "okay";
 +};
 +
