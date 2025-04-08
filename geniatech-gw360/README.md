@@ -20,12 +20,12 @@ $ make menuconfig
 
 Select target profile:
 ```
+    Target System > NXP i.MX
     Target Profile > Geniatech GTW360
 ```
 
 Configure built-in kernel modules:
 ```
-<*> Kernel Modules > Other modules > kmod-rtc-ds1307
 <*> Kernel Modules > Wireless Drivers > kmod-mt7601u
 ```
 

@@ -10,7 +10,7 @@
  	imx6ull-myir-mys-6ulx-eval.dtb \
 --- a/arch/arm/boot/dts/nxp/imx/imx6ull-gtw360.dts
 +++ b/arch/arm/boot/dts/nxp/imx/imx6ull-gtw360.dts
-@@ -0,0 +1,268 @@
+@@ -0,0 +1,272 @@
 +/dts-v1/;
 +
 +#include <dt-bindings/input/input.h>
@@ -278,4 +278,8 @@
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_wdog>;
 +	fsl,wdog_b;
++};
++
++&snvs_rtc {
++	status = "okay";
 +};
