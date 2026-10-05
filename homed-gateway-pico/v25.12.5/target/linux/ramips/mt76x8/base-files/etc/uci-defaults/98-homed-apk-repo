@@ -1,0 +1,17 @@
+. /lib/functions.sh
+
+# HOMEd APK-репозиторий (OpenWrt >= 25.12, wiki.homed.dev/common/apk).
+# Идемпотентно: пропускается, если homed.list уже есть.
+if [ ! -f /etc/apk/repositories.d/homed.list ]; then
+	ARCH="$(cat /etc/apk/arch 2>/dev/null)"
+	[ -n "$ARCH" ] || ARCH="mipsel_24kc"
+	mkdir -p /etc/apk/keys /etc/apk/repositories.d
+	if wget -O /etc/apk/keys/homed.pem https://apk.homed.dev/apk.key; then
+		echo "https://apk.homed.dev/${ARCH}/packages.adb" > /etc/apk/repositories.d/homed.list
+		logger -t pico-firstboot "HOMEd APK repo added for ${ARCH}"
+	else
+		logger -t pico-firstboot "HOMEd APK key download failed, retry with: apk update after network is up"
+	fi
+fi
+
+exit 0
