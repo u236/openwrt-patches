@@ -3,8 +3,8 @@
 $ git clone https://github.com/u236/openwrt-patches.git
 $ git clone https://github.com/openwrt/openwrt.git
 $ cd openwrt
-$ git checkout v24.10.0
-$ cp -rT ../openwrt-patches/homed-gateway-rk3566/v24.10.0 .
+$ git checkout v25.12.5
+$ cp -rT ../openwrt-patches/homed-gateway-rk3566/v25.12.5 .
 ```
 
 ### 2. Update feeds:
@@ -36,7 +36,7 @@ Configure built-in kernel modules (Gateway Pro):
 <*> Kernel Modules > Wireless Drivers > kmod-brcmfmac
 ```
 
-Configure built-in packakes:
+Configure built-in packages:
 ```
 <*> LuCI > Collections > luci
 <*> Network > WirelessAPD > wpad

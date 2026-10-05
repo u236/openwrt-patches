@@ -1,0 +1,7 @@
+https://core.u236.org/releases/25.12.5/targets/rockchip/armv8/packages/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_generic/base/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_generic/luci/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_generic/packages/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_generic/routing/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_generic/telephony/packages.adb
+https://downloads.openwrt.org/releases/25.12.5/packages/aarch64_generic/video/packages.adb
