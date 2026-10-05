@@ -18,6 +18,7 @@ ramips_setup_interfaces()
 	glinet,vixmini|\
 	hak5,wifi-pineapple-mk7|\
 	hiwifi,hc5611|\
+	homed,gateway-pico|\
 	mediatek,linkit-smart-7688|\
 	minew,g1-c|\
 	onion,omega2p|\
@@ -256,11 +257,6 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan:2" "1:lan:1" "4:wan" "6@eth0"
 		;;
-	homed,gateway-pico)
-		ucidef_add_switch "switch0"
-		ucidef_add_switch_attr "switch0" "enable" "false"
-		ucidef_set_interface_lan "eth0"
-		;;
 	esac
 }
 
@@ -314,6 +310,9 @@ ramips_setup_macs()
 	wrtnode,wrtnode2p|\
 	wrtnode,wrtnode2r)
 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x4)" 1)
+		;;
+	homed,gateway-pico)
+		lan_mac=$(mtd_get_mac_binary factory 0x28)
 		;;
 	iptime,a3|\
 	iptime,a604m|\
@@ -384,9 +383,6 @@ ramips_setup_macs()
 	xiaomi,mi-router-4a-100m-intl-v2|\
 	xiaomi,mi-router-4c)
 		wan_mac=$(mtd_get_mac_binary factory 0x4)
-		;;
-	homed,gateway-pico)
-		lan_mac=$(mtd_get_mac_binary factory 0x28)
 		;;
 	esac
 

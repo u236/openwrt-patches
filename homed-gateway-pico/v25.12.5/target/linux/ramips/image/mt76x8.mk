@@ -351,16 +351,6 @@ define Device/hilink_hlk-7688a
 endef
 TARGET_DEVICES += hilink_hlk-7688a
 
-
-define Device/homed_gateway-pico
-  IMAGE_SIZE := 32448k
-  DEVICE_VENDOR := HOMEd
-  DEVICE_MODEL := Gateway Pico
-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-mmc-mtk uboot-envtools
-  SUPPORTED_DEVICES += homed,gateway-pico
-endef
-TARGET_DEVICES += homed_gateway-pico
-
 define Device/hiwifi_hc5611
   IMAGE_SIZE := 15808k
   DEVICE_VENDOR := HiWiFi
@@ -393,6 +383,14 @@ define Device/hiwifi_hc5861b
   DEVICE_PACKAGES := kmod-mt76x2
 endef
 TARGET_DEVICES += hiwifi_hc5861b
+
+define Device/homed_gateway-pico
+  IMAGE_SIZE := 32448k
+  DEVICE_VENDOR := HOMEd
+  DEVICE_MODEL := Gateway Pico
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-mmc-mtk
+endef
+TARGET_DEVICES += homed_gateway-pico
 
 define Device/hongdian_h7920-v40
   IMAGE_SIZE := 16064k

@@ -14,10 +14,6 @@
 		led-upgrade = &led_status;
 	};
 
-	chosen {
-		bootargs = "console=ttyS0,57600";
-	};
-
 	leds {
 		compatible = "gpio-leds";
 
@@ -62,64 +58,17 @@
 
 &state_default {
 	gpio {
-		groups = "gpio";
+		groups = "gpio", "i2c", "p0led_an", "p1led_an", "pwm1", "wdt", "wled_an";
 		function = "gpio";
 	};
+};
 
-	perst {
-		groups = "perst";
-		function = "gpio";
-	};
+&uart1 {
+	status = "okay";
+};
 
-	refclk {
-		groups = "refclk";
-		function = "gpio";
-	};
-
-	i2s {
-		groups = "i2s";
-		function = "gpio";
-	};
-
-	spis {
-		groups = "spis";
-		function = "gpio";
-	};
-
-	wled_kn {
-		groups = "wled_kn";
-		function = "gpio";
-	};
-
-	wled_an {
-		groups = "wled_an";
-		function = "gpio";
-	};
-
-	wdt {
-		groups = "wdt";
-		function = "gpio";
-	};
-
-	pwm0 {
-		groups = "pwm0";
-		function = "gpio";
-	};
-
-	pwm1 {
-		groups = "pwm1";
-		function = "gpio";
-	};
-
-	p0led_an {
-		groups = "p0led_an";
-		function = "gpio";
-	};
-
-	p1led_an {
-		groups = "p1led_an";
-		function = "gpio";
-	};
+&uart2 {
+	status = "okay";
 };
 
 &spi0 {
@@ -128,7 +77,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi_pins>, <&spi_cs1_pins>;
 
-	flash0: flash@0 {
+	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <40000000>;
@@ -171,7 +120,7 @@
 				};
 			};
 
-			firmware: partition@50000 {
+			partition@50000 {
 				compatible = "denx,uimage";
 				label = "firmware";
 				reg = <0x50000 0x1fb0000>;
@@ -186,14 +135,6 @@
 		reg = <1>;
 		spi-max-frequency = <40000000>;
 	};
-};
-
-&uart1 {
-	status = "okay";
-};
-
-&uart2 {
-	status = "okay";
 };
 
 &ethernet {
@@ -226,7 +167,6 @@
 
 &wmac {
 	status = "okay";
-
 	nvmem-cells = <&eeprom_factory_0>;
 	nvmem-cell-names = "eeprom";
 };
