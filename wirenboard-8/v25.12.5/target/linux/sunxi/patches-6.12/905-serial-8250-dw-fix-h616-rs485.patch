@@ -1,0 +1,75 @@
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -759,6 +759,12 @@ static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
+ 	.quirks = DW_UART_QUIRK_CPR_VALUE | DW_UART_QUIRK_IS_DMA_FC,
+ };
+ 
++static const struct dw8250_platform_data dw8250_sun50i_h616_data = {
++	.usr_reg = DW_UART_USR,
++	.cpr_value = 0x00100000,
++	.quirks = DW_UART_QUIRK_CPR_VALUE,
++};
++
+ static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
+ 	.usr_reg = DW_UART_USR,
+ 	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+@@ -766,6 +772,7 @@ static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
+ 
+ static const struct of_device_id dw8250_of_match[] = {
+ 	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
++	{ .compatible = "allwinner,sun50i-h616-uart", .data = &dw8250_sun50i_h616_data },
+ 	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
+ 	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
+ 	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1403,6 +1403,15 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p)
+ 	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
+ 		serial8250_clear_and_reinit_fifos(p);
+ 
++		/*
++		 * A byte and a break condition caused by the bus turnaround
++		 * may still be latched in RBR and LSR after clearing the FIFOs.
++		 */
++		serial_port_in(&p->port, UART_RX);
++		serial_port_in(&p->port, UART_LSR);
++		p->lsr_saved_flags = 0;
++		p->rx_disabled = false;
++
+ 		p->ier |= UART_IER_RLSI | UART_IER_RDI;
+ 		serial_port_out(&p->port, UART_IER, p->ier);
+ 	}
+@@ -1551,8 +1560,10 @@ void serial8250_em485_start_tx(struct uart_8250_port *up)
+ {
+ 	unsigned char mcr = serial8250_in_MCR(up);
+ 
+-	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
++	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
+ 		serial8250_stop_rx(&up->port);
++		up->rx_disabled = true;
++	}
+ 
+ 	if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+ 		mcr |= UART_MCR_RTS;
+@@ -1914,6 +1925,10 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 	    !(port->read_status_mask & UART_LSR_DR))
+ 		skip_rx = true;
+ 
++	/* RX is ignored during the RS-485 half-duplex transmission */
++	if (up->rx_disabled)
++		skip_rx = true;
++
+ 	if (status & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
+ 		struct irq_data *d;
+ 
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -167,6 +167,8 @@ struct uart_8250_port {
+ 	/* Serial port overrun backoff */
+ 	struct delayed_work overrun_backoff;
+ 	u32 overrun_backoff_time_ms;
++
++	bool rx_disabled;
+ };
+ 
+ static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)

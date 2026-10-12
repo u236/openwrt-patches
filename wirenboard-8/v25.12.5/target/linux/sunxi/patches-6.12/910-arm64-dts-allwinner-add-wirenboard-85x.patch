@@ -1,0 +1,741 @@
+--- a/arch/arm64/boot/dts/allwinner/Makefile
++++ b/arch/arm64/boot/dts/allwinner/Makefile
+@@ -43,6 +43,7 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h313-tanix-tx1.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-bigtreetech-cb1-manta.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-bigtreetech-pi.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-orangepi-zero2.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-wirenboard85x.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-x96-mate.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-longanpi-3h.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-orangepi-zero2w.dtb
+--- /dev/null
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-wirenboard85x.dts
+@@ -0,0 +1,728 @@
++/dts-v1/;
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include "sun50i-h616.dtsi"
++#include "sun50i-h616-cpu-opp.dtsi"
++
++/ {
++	model = "Wiren Board 8.5";
++	compatible = "wirenboard,wirenboard-85x", "wirenboard,wirenboard-8xx", "allwinner,sun50i-h616";
++
++	aliases {
++		ethernet0 = &emac0;
++		ethernet1 = &emac1;
++		i2c0 = &r_i2c;
++		i2c1 = &i2c3;
++		led-boot = &led_red;
++		led-failsafe = &led_red;
++		led-running = &led_green;
++		led-upgrade = &led_red;
++		mdio-gpio0 = &mdio_gpio0;
++		mdio-gpio1 = &mdio_gpio1;
++		mmc0 = &mmc2;
++		mmc1 = &mmc0;
++		rtc0 = &rtc_wbec;
++		rtc1 = &rtc;
++		serial0 = &uart0;
++		serial1 = &uart1;
++		serial2 = &uart2;
++		serial4 = &uart4;
++		serial5 = &uart5;
++		watchdog0 = &wdt_wbec;
++		watchdog1 = &watchdog;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	a1-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 6>;
++		#io-channel-cells = <1>;
++		output-ohms = <10000>;
++		full-ohms = <110000>;
++	};
++
++	a2-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 7>;
++		#io-channel-cells = <1>;
++		output-ohms = <10000>;
++		full-ohms = <110000>;
++	};
++
++	a3-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 8>;
++		#io-channel-cells = <1>;
++		output-ohms = <10000>;
++		full-ohms = <110000>;
++	};
++
++	a4-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 9>;
++		#io-channel-cells = <1>;
++		output-ohms = <10000>;
++		full-ohms = <110000>;
++	};
++
++	ext-phys {
++		compatible = "simple-pm-bus";
++		clocks = <&ccu CLK_EMAC_25M>;
++		clock-names = "emac-25m";
++		pinctrl-names = "default";
++		pinctrl-0 = <&ephy_25m_pins>;
++
++		mdio_gpio0: mdio-gpio0 {
++			compatible = "virtual,mdio-gpio";
++			gpios = <&pio 8 1 GPIO_ACTIVE_HIGH>, <&pio 8 0 GPIO_ACTIVE_HIGH>;
++			reset-gpios = <&pio 8 4 GPIO_ACTIVE_LOW>;
++			reset-delay-us = <50000>;
++			reset-post-delay-us = <150000>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			ext_phy0: ethernet-phy@0 {
++				compatible = "ethernet-phy-ieee802.3-c22";
++				reg = <0>;
++			};
++		};
++
++		mdio_gpio1: mdio-gpio1 {
++			compatible = "virtual,mdio-gpio";
++			gpios = <&pio 0 8 GPIO_ACTIVE_HIGH>, <&pio 0 9 GPIO_ACTIVE_HIGH>;
++			reset-gpios = <&pio 8 8 GPIO_ACTIVE_LOW>;
++			reset-delay-us = <50000>;
++			reset-post-delay-us = <150000>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			ext_phy1: ethernet-phy@0 {
++				compatible = "ethernet-phy-ieee802.3-c22";
++				reg = <0>;
++			};
++		};
++	};
++
++	gpio-export {
++		compatible = "gpio-export";
++
++		in_a1 {
++			gpio-export,name = "in:a1";
++			gpios = <&pio 7 9 GPIO_ACTIVE_LOW>;
++		};
++
++		in_a2 {
++			gpio-export,name = "in:a2";
++			gpios = <&pio 7 4 GPIO_ACTIVE_LOW>;
++		};
++
++		in_a3 {
++			gpio-export,name = "in:a3";
++			gpios = <&pio 3 25 GPIO_ACTIVE_LOW>;
++		};
++
++		in_a4 {
++			gpio-export,name = "in:a4";
++			gpios = <&pio 3 20 GPIO_ACTIVE_LOW>;
++		};
++
++		modem_power {
++			gpio-export,name = "modem:power";
++			gpio-export,output = <1>;
++			gpios = <&pio 4 4 GPIO_ACTIVE_HIGH>;
++		};
++
++		modem_sim {
++			gpio-export,name = "modem:sim";
++			gpio-export,output = <0>;
++			gpios = <&pio 4 2 GPIO_ACTIVE_HIGH>;
++		};
++
++		modem_status {
++			gpio-export,name = "modem:status";
++			gpios = <&pio 4 12 GPIO_ACTIVE_LOW>;
++		};
++
++		modem_switch {
++			gpio-export,name = "modem:switch";
++			gpio-export,output = <0>;
++			gpios = <&pio 6 14 GPIO_ACTIVE_HIGH>;
++		};
++
++		out_5v {
++			gpio-export,name = "out:5v";
++			gpio-export,output = <1>;
++			gpios = <&pio 6 13 GPIO_ACTIVE_HIGH>;
++		};
++
++		out_a1 {
++			gpio-export,name = "out:a1";
++			gpio-export,output = <0>;
++			gpios = <&pio 4 5 GPIO_ACTIVE_HIGH>;
++		};
++
++		out_a2 {
++			gpio-export,name = "out:a2";
++			gpio-export,output = <0>;
++			gpios = <&pio 3 23 GPIO_ACTIVE_HIGH>;
++		};
++
++		out_a3 {
++			gpio-export,name = "out:a3";
++			gpio-export,output = <0>;
++			gpios = <&pio 6 9 GPIO_ACTIVE_HIGH>;
++		};
++
++		out_a4 {
++			gpio-export,name = "out:a4";
++			gpio-export,output = <0>;
++			gpios = <&pio 6 11 GPIO_ACTIVE_HIGH>;
++		};
++
++		out_v {
++			gpio-export,name = "out:v";
++			gpio-export,output = <1>;
++			gpios = <&gpio_wbec 4 GPIO_ACTIVE_HIGH>;
++		};
++
++		rs485_1_failsafe {
++			gpio-export,name = "rs485-1:failsafe";
++			gpio-export,output = <1>;
++			gpios = <&pio 3 17 GPIO_ACTIVE_HIGH>;
++		};
++
++		rs485_1_termination {
++			gpio-export,name = "rs485-1:termination";
++			gpio-export,output = <1>;
++			gpios = <&pio 3 19 GPIO_ACTIVE_HIGH>;
++		};
++
++		rs485_2_failsafe {
++			gpio-export,name = "rs485-2:failsafe";
++			gpio-export,output = <1>;
++			gpios = <&pio 3 18 GPIO_ACTIVE_HIGH>;
++		};
++
++		rs485_2_termination {
++			gpio-export,name = "rs485-2:termination";
++			gpio-export,output = <1>;
++			gpios = <&pio 3 21 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	i2c_wbec: i2c-wbec {
++		compatible = "i2c-gpio";
++		sda-gpios = <&pio 7 7 GPIO_ACTIVE_HIGH>;
++		scl-gpios = <&pio 7 8 GPIO_ACTIVE_HIGH>;
++		i2c-gpio,delay-us = <2>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		status = "disabled";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		led_green: led-green {
++			label = "green:status";
++			gpios = <&pio 3 27 GPIO_ACTIVE_LOW>;
++		};
++
++		led_red: led-red {
++			label = "red:status";
++			gpios = <&pio 0 12 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	reg_vqmmc: mmc-regulator {
++		compatible = "allwinner,h616-mmc-regulator";
++		regulator-name = "vqmmc";
++		regulator-boot-on;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <3300000>;
++		syscon = <&pio>;
++	};
++
++	onewire-w1 {
++		compatible = "w1-gpio";
++		gpios = <&pio 3 12 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		pu-gpios = <&pio 6 8 GPIO_ACTIVE_HIGH>;
++	};
++
++	onewire-w2 {
++		compatible = "w1-gpio";
++		gpios = <&pio 3 24 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
++		pu-gpios = <&pio 4 21 GPIO_ACTIVE_HIGH>;
++	};
++
++	pcb-temp {
++		compatible = "iio-hwmon";
++		io-channels = <&adc_wbec 5>;
++	};
++
++	reg_periph: periph-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "periph";
++		regulator-always-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		gpio = <&pio 6 12 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	reg_sd: sd-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "sd";
++		regulator-always-on;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&pio 4 16 GPIO_ACTIVE_LOW>;
++	};
++
++	reg_usb_vbus: usb-vbus-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "usb-vbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		gpio = <&pio 4 9 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	reg_wifi: wifi-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "wifi";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&pio 4 15 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	thermal-zones {
++		cpu-thermal {
++			sustainable-power = <1100>;
++			k_po = <45>;
++			k_pu = <90>;
++			k_i = <0>;
++			/delete-node/ trips;
++			/delete-node/ cooling-maps;
++
++			trips {
++				cpu_trip_1100mv: cpu-trip-0 {
++					temperature = <82000>;
++					type = "passive";
++					hysteresis = <500>;
++				};
++
++				cpu_trip_1050mv: cpu-trip-1 {
++					temperature = <92000>;
++					type = "passive";
++					hysteresis = <500>;
++				};
++
++				cpu_trip_1000mv: cpu-trip-2 {
++					temperature = <100000>;
++					type = "passive";
++					hysteresis = <500>;
++				};
++
++				cpu_trip_950mv: cpu-trip-3 {
++					temperature = <110000>;
++					type = "passive";
++					hysteresis = <500>;
++				};
++
++				cpu-trip-4 {
++					temperature = <115000>;
++					type = "critical";
++					hysteresis = <0>;
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&cpu_trip_1100mv>;
++					cooling-device = <&cpu0 2 2>, <&cpu1 2 2>, <&cpu2 2 2>, <&cpu3 2 2>;
++				};
++
++				map1 {
++					trip = <&cpu_trip_1050mv>;
++					cooling-device = <&cpu0 3 3>, <&cpu1 3 3>, <&cpu2 3 3>, <&cpu3 3 3>;
++				};
++
++				map2 {
++					trip = <&cpu_trip_1000mv>;
++					cooling-device = <&cpu0 4 7>, <&cpu1 4 7>, <&cpu2 4 7>, <&cpu3 4 7>;
++				};
++
++				map3 {
++					trip = <&cpu_trip_950mv>;
++					cooling-device = <&cpu0 5 THERMAL_NO_LIMIT>, <&cpu1 5 THERMAL_NO_LIMIT>,
++							 <&cpu2 5 THERMAL_NO_LIMIT>, <&cpu3 5 THERMAL_NO_LIMIT>;
++				};
++			};
++		};
++	};
++
++	v33-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 1>;
++		#io-channel-cells = <1>;
++		output-ohms = <1>;
++		full-ohms = <1>;
++	};
++
++	v50-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 2>;
++		#io-channel-cells = <1>;
++		output-ohms = <1>;
++		full-ohms = <1>;
++	};
++
++	vbus-debug-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 3>;
++		#io-channel-cells = <1>;
++		output-ohms = <1>;
++		full-ohms = <1>;
++	};
++
++	vin-volt {
++		compatible = "voltage-divider";
++		io-channels = <&adc_wbec 0>;
++		#io-channel-cells = <1>;
++		output-ohms = <1>;
++		full-ohms = <1>;
++	};
++};
++
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
++&ehci1 {
++	status = "okay";
++};
++
++&ehci2 {
++	status = "okay";
++};
++
++&ehci3 {
++	status = "okay";
++};
++
++&emac0 {
++	clocks = <&ccu CLK_BUS_EMAC0>, <&ccu CLK_EMAC_25M>;
++	clock-names = "stmmaceth", "pclk";
++	phy-handle = <&ext_phy0>;
++	phy-mode = "rmii";
++	pinctrl-names = "default";
++	pinctrl-0 = <&emac0_rmii_pins>;
++	allwinner,rx-delay-ps = <3100>;
++	allwinner,tx-delay-ps = <700>;
++	allwinner,ignore-emac-reset-failure;
++	status = "okay";
++};
++
++&i2c3 {
++	pinctrl-names = "default", "gpio";
++	pinctrl-0 = <&i2c3_pa_pins>;
++	pinctrl-1 = <&i2c3_gpio_pins>;
++	scl-gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>;
++	sda-gpios = <&pio 0 11 GPIO_ACTIVE_HIGH>;
++	status = "okay";
++};
++
++&mmc0 {
++	vmmc-supply = <&reg_sd>;
++	vqmmc-supply = <&reg_vqmmc>;
++	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;
++	bus-width = <4>;
++	max-frequency = <100000000>;
++	mmc-ddr-1_8v;
++	sd-uhs-sdr12;
++	sd-uhs-sdr25;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
++	status = "okay";
++};
++
++&mmc2 {
++	vmmc-supply = <&reg_dcdc1>;
++	vqmmc-supply = <&reg_aldo1>;
++	bus-width = <8>;
++	non-removable;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
++	mmc-hs400-1_8v;
++	no-sdio;
++	status = "okay";
++};
++
++&ohci1 {
++	status = "okay";
++};
++
++&ohci2 {
++	status = "okay";
++};
++
++&ohci3 {
++	status = "okay";
++};
++
++&pio {
++	compatible = "allwinner,sun50i-h616-pinctrl", "syscon";
++	vcc-pa-supply = <&reg_dcdc1>;
++	vcc-pc-supply = <&reg_aldo1>;
++	vcc-pd-supply = <&reg_dcdc1>, <&reg_bldo1>;
++	vcc-pe-supply = <&reg_dcdc1>;
++	vcc-pg-supply = <&reg_dcdc1>;
++	vcc-pi-supply = <&reg_dcdc1>;
++
++	emac0_rmii_pins: emac0-rmii-pins {
++		pins = "PI2", "PI3", "PI5", "PI6", "PI9", "PI10", "PI11", "PI12";
++		function = "emac0";
++		drive-strength = <40>;
++	};
++
++	emac1_rmii_pins: emac1-rmii-pins {
++		pins = "PA0", "PA1", "PA2", "PA3", "PA4", "PA5", "PA6", "PA7";
++		function = "emac1";
++		drive-strength = <40>;
++	};
++
++	ephy_25m_pins: ephy-25m-pins {
++		pins = "PI16";
++		function = "emac0";
++		drive-strength = <40>;
++	};
++
++	i2c3_gpio_pins: i2c3-gpio-pins {
++		pins = "PA10", "PA11";
++		function = "gpio_out";
++	};
++
++	i2c3_pa_pins: i2c3-pa-pins {
++		pins = "PA10", "PA11";
++		function = "i2c3";
++		drive-strength = <40>;
++	};
++
++	mmc0_pins: mmc0-pins {
++		drive-strength = <40>;
++	};
++
++	mod3_pins: mod3-pins {
++		pins = "PI13", "PI14";
++		function = "uart4";
++	};
++
++	mod4_pins: mod4-pins {
++		pins = "PH2", "PH3";
++		function = "uart5";
++	};
++
++	rs485_1_pins: rs485-1-pins {
++		pins = "PG15", "PG16";
++		function = "uart2";
++	};
++
++	rs485_2_pins: rs485-2-pins {
++		pins = "PG6", "PG7";
++		function = "uart1";
++	};
++};
++
++&r_i2c {
++	status = "okay";
++
++	pmic@36 {
++		compatible = "x-powers,axp15060";
++		reg = <0x36>;
++		interrupt-controller;
++		#interrupt-cells = <1>;
++		wakeup-source;
++
++		regulators {
++			reg_dcdc1: dcdc1 {
++				regulator-name = "vcc-3v3";
++				regulator-always-on;
++				regulator-min-microvolt = <1500000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			reg_dcdc2: dcdc2 {
++				regulator-name = "vdd-cpu";
++				regulator-always-on;
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1540000>;
++				regulator-ramp-delay = <6001>;
++			};
++
++			reg_aldo1: aldo1 {
++				regulator-name = "vcc-1v8";
++				regulator-always-on;
++				regulator-min-microvolt = <700000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			reg_bldo1: bldo1 {
++				regulator-name = "bldo1";
++				regulator-always-on;
++				regulator-min-microvolt = <700000>;
++				regulator-max-microvolt = <3300000>;
++			};
++		};
++	};
++};
++
++&{/soc} {
++	emac1: ethernet@5030000 {
++		compatible = "allwinner,sun50i-t507-emac1";
++		reg = <0x05030000 0x10000>;
++		interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "macirq";
++		clocks = <&ccu CLK_BUS_EMAC1>, <&ccu CLK_EMAC_25M>;
++		clock-names = "stmmaceth", "pclk";
++		resets = <&ccu RST_BUS_EMAC1>;
++		reset-names = "stmmaceth";
++		syscon = <&syscon>;
++		phy-handle = <&ext_phy1>;
++		phy-mode = "rmii";
++		pinctrl-names = "default";
++		pinctrl-0 = <&emac1_rmii_pins>;
++		allwinner,rx-delay-ps = <3100>;
++		allwinner,tx-delay-ps = <700>;
++		allwinner,ignore-emac-reset-failure;
++	};
++};
++
++&spi1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi1_pins>, <&spi1_cs0_pin>;
++	status = "okay";
++
++	wbec@0 {
++		compatible = "wirenboard,wbec";
++		reg = <0>;
++		interrupt-parent = <&pio>;
++		interrupts = <4 7 IRQ_TYPE_EDGE_RISING>;
++		spi-max-frequency = <500000>;
++		spi-cs-inactive-delay-ns = <100000>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		adc_wbec: adc {
++			compatible = "wirenboard,wbec-adc";
++			#io-channel-cells = <1>;
++		};
++
++		battery {
++			compatible = "wirenboard,wbec-battery";
++		};
++
++		gpio_wbec: gpio {
++			compatible = "wirenboard,wbec-gpio";
++			gpio-controller;
++			#gpio-cells = <2>;
++			ngpios = <11>;
++		};
++
++		power {
++			compatible = "wirenboard,wbec-power";
++		};
++
++		pwm {
++			compatible = "wirenboard,wbec-pwm";
++			#pwm-cells = <3>;
++		};
++
++		pwrkey {
++			compatible = "wirenboard,wbec-pwrkey";
++		};
++
++		rtc_wbec: rtc {
++			compatible = "wirenboard,wbec-rtc";
++			wakeup-source;
++		};
++
++		wdt_wbec: watchdog {
++			compatible = "wirenboard,wbec-watchdog";
++		};
++
++		serial@0 {
++			compatible = "wirenboard,wbec-uart";
++			reg = <0>;
++		};
++
++		serial@1 {
++			compatible = "wirenboard,wbec-uart";
++			reg = <1>;
++		};
++	};
++};
++
++&uart0 {
++	compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_ph_pins>;
++	status = "okay";
++};
++
++&uart1 {
++	compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
++	pinctrl-names = "default";
++	pinctrl-0 = <&rs485_2_pins>;
++	/delete-property/ dmas;
++	/delete-property/ dma-names;
++	rts-gpios = <&pio 3 15 GPIO_ACTIVE_HIGH>;
++	linux,rs485-enabled-at-boot-time;
++	status = "okay";
++};
++
++&uart2 {
++	compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
++	pinctrl-names = "default";
++	pinctrl-0 = <&rs485_1_pins>;
++	/delete-property/ dmas;
++	/delete-property/ dma-names;
++	rts-gpios = <&pio 3 16 GPIO_ACTIVE_HIGH>;
++	linux,rs485-enabled-at-boot-time;
++	status = "okay";
++};
++
++&uart4 {
++	compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
++	pinctrl-names = "default";
++	pinctrl-0 = <&mod3_pins>;
++	/delete-property/ dmas;
++	/delete-property/ dma-names;
++	cts-override;
++	status = "okay";
++};
++
++&uart5 {
++	compatible = "allwinner,sun50i-h616-uart", "snps,dw-apb-uart";
++	pinctrl-names = "default";
++	pinctrl-0 = <&mod4_pins>;
++	/delete-property/ dmas;
++	/delete-property/ dma-names;
++	cts-override;
++	status = "okay";
++};
++
++&usbotg {
++	dr_mode = "peripheral";
++	status = "okay";
++};
++
++&usbphy {
++	usb1_vbus-supply = <&reg_wifi>;
++	usb3_vbus-supply = <&reg_usb_vbus>;
++	status = "okay";
++};

@@ -1,0 +1,130 @@
+--- /dev/null
++++ b/configs/wirenboard8_defconfig
+@@ -0,0 +1,39 @@
++CONFIG_ARM=y
++CONFIG_ARCH_SUNXI=y
++CONFIG_ENV_SIZE=0xC000
++CONFIG_DEFAULT_DEVICE_TREE="allwinner/sun50i-h616-wirenboard8xx"
++CONFIG_SPL=y
++CONFIG_DRAM_SUN50I_H616_DX_ODT=0x07070707
++CONFIG_DRAM_SUN50I_H616_DX_DRI=0x0e0e0e0e
++CONFIG_DRAM_SUN50I_H616_CA_DRI=0x0e0e
++CONFIG_DRAM_SUN50I_H616_ODT_EN=0xaaaaeeee
++CONFIG_DRAM_SUN50I_H616_TPR6=0x44000000
++CONFIG_DRAM_SUN50I_H616_TPR10=0x402f6633
++CONFIG_DRAM_SUN50I_H616_TPR11=0x24242624
++CONFIG_DRAM_SUN50I_H616_TPR12=0x0f0f100f
++CONFIG_DRAM_SUN50I_H616_PHY_ADDR_MAP_1=y
++CONFIG_MACH_SUN50I_H616=y
++CONFIG_SUNXI_DRAM_H616_LPDDR4=y
++CONFIG_DRAM_CLK=792
++CONFIG_MMC_SUNXI_SLOT_EXTRA=2
++CONFIG_R_I2C_ENABLE=y
++# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
++CONFIG_BOOTDELAY=0
++CONFIG_SPL_I2C=y
++CONFIG_SYS_MMC_ENV_DEV=1
++CONFIG_SPL_SYS_I2C_LEGACY=y
++CONFIG_SYS_I2C_MVTWSI=y
++CONFIG_SYS_I2C_SLAVE=0x7f
++CONFIG_SYS_I2C_SPEED=400000
++CONFIG_SYS_MMC_MAX_BLK_COUNT=1
++CONFIG_AXP15060_POWER=y
++CONFIG_AXP_DCDC1_VOLT=3300
++CONFIG_AXP_DCDC2_VOLT=900
++CONFIG_AXP_DCDC3_VOLT=940
++CONFIG_AXP_DCDC4_VOLT=900
++CONFIG_AXP_DCDC5_VOLT=1100
++CONFIG_AXP_ALDO1_VOLT=1800
++CONFIG_AXP_ALDO2_VOLT=1800
++CONFIG_AXP_ALDO3_VOLT=0
++CONFIG_AXP_ALDO4_VOLT=1800
++CONFIG_AXP_SW_ON=y
+--- /dev/null
++++ b/dts/upstream/src/arm64/allwinner/sun50i-h616-wirenboard8xx.dts
+@@ -0,0 +1,85 @@
++/dts-v1/;
++#include <dt-bindings/gpio/gpio.h>
++#include "sun50i-h616.dtsi"
++
++/ {
++	model = "Wiren Board 8.x";
++	compatible = "wirenboard,wirenboard-8xx", "allwinner,sun50i-h616";
++
++	aliases {
++		ethernet0 = &emac0;
++		ethernet1 = "/soc/ethernet@5030000";
++		mmc0 = &mmc0;
++		mmc1 = &mmc2;
++		serial0 = &uart0;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	reg_sd: sd-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "sd";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&pio 4 16 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&mmc0 {
++	vmmc-supply = <&reg_sd>;
++	broken-cd;
++	bus-width = <4>;
++	status = "okay";
++};
++
++&mmc2 {
++	vmmc-supply = <&reg_dcdc1>;
++	vqmmc-supply = <&reg_aldo1>;
++	bus-width = <8>;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
++	no-sdio;
++	no-sd;
++	status = "okay";
++};
++
++&pio {
++	vcc-pc-supply = <&reg_aldo1>;
++	vcc-pf-supply = <&reg_dcdc1>;
++	vcc-pg-supply = <&reg_dcdc1>;
++	vcc-ph-supply = <&reg_dcdc1>;
++	vcc-pi-supply = <&reg_dcdc1>;
++};
++
++&r_i2c {
++	status = "okay";
++
++	pmic@36 {
++		compatible = "x-powers,axp15060";
++		reg = <0x36>;
++
++		regulators {
++			reg_dcdc1: dcdc1 {
++				regulator-name = "vcc-3v3";
++				regulator-always-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++			};
++
++			reg_aldo1: aldo1 {
++				regulator-name = "vcc-1v8";
++				regulator-always-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++			};
++		};
++	};
++};
++
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_ph_pins>;
++	status = "okay";
++};

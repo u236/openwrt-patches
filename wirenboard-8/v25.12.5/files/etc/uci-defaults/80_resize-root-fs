@@ -1,0 +1,12 @@
+. /lib/functions.sh
+. /lib/upgrade/common.sh
+
+grep -q " / ext4 " /proc/mounts && export_bootdevice && export_partdevice disk 0 && export_partdevice part 2 || exit 0
+
+mount -o remount,ro /
+parted -s /dev/$disk resizepart 2 100%
+tune2fs -O ^resize_inode /dev/$part
+fsck.ext4 -y /dev/$part
+mount -o remount,rw /
+resize2fs /dev/$part
+reboot

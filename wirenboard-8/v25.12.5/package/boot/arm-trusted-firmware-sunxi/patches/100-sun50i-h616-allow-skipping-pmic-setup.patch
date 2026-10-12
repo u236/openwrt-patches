@@ -1,0 +1,21 @@
+--- a/plat/allwinner/sun50i_h616/sunxi_power.c
++++ b/plat/allwinner/sun50i_h616/sunxi_power.c
+@@ -66,6 +66,7 @@ static int rsb_init(void)
+ 
+ int sunxi_pmic_setup(uint16_t socid, const void *fdt)
+ {
++#if SUNXI_SETUP_REGULATORS == 1
+ 	int ret;
+ 
+ 	INFO("PMIC: Probing AXP305 on RSB\n");
+@@ -91,6 +92,10 @@ int sunxi_pmic_setup(uint16_t socid, const void *fdt)
+ 		return ret;
+ 
+ 	return 0;
++#else
++	/* Skipping PMIC configuration */
++	return 1;
++#endif
+ }
+ 
+ void sunxi_power_down(void)

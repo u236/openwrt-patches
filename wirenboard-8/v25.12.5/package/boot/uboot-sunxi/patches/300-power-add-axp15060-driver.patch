@@ -1,0 +1,479 @@
+--- a/arch/arm/mach-sunxi/pmic_bus.c
++++ b/arch/arm/mach-sunxi/pmic_bus.c
+@@ -26,6 +26,8 @@
+ 
+ #define AXP221_CHIP_ADDR		0x68
+ 
++#define AXP15060_I2C_ADDR		0x36
++
+ #if CONFIG_IS_ENABLED(PMIC_AXP)
+ static struct udevice *pmic;
+ #else
+@@ -39,6 +41,8 @@ static int pmic_i2c_address(void)
+ 		return AXP313_I2C_ADDR;
+ 	if (IS_ENABLED(CONFIG_AXP717_POWER))
+ 		return AXP717_I2C_ADDR;
++	if (IS_ENABLED(CONFIG_AXP15060_POWER))
++		return AXP15060_I2C_ADDR;
+ 
+ 	/* Other AXP2xx and AXP8xx variants */
+ 	return AXP209_I2C_ADDR;
+--- a/board/sunxi/board.c
++++ b/board/sunxi/board.c
+@@ -562,7 +562,8 @@ void sunxi_board_init(void)
+ #if defined CONFIG_AXP152_POWER || defined CONFIG_AXP209_POWER || \
+ 	defined CONFIG_AXP221_POWER || defined CONFIG_AXP305_POWER || \
+ 	defined CONFIG_AXP809_POWER || defined CONFIG_AXP818_POWER || \
+-	defined CONFIG_AXP313_POWER || defined CONFIG_AXP717_POWER
++	defined CONFIG_AXP313_POWER || defined CONFIG_AXP717_POWER || \
++	defined CONFIG_AXP15060_POWER
+ 	power_failed = axp_init();
+ 
+ 	if (IS_ENABLED(CONFIG_AXP_DISABLE_BOOT_ON_POWERON) && !power_failed) {
+@@ -620,7 +621,7 @@ void sunxi_board_init(void)
+ 	power_failed |= axp_set_fldo(3, CONFIG_AXP_FLDO3_VOLT);
+ #endif
+ 
+-#if defined CONFIG_AXP809_POWER || defined CONFIG_AXP818_POWER
++#if defined CONFIG_AXP809_POWER || defined CONFIG_AXP818_POWER || defined CONFIG_AXP15060_POWER
+ 	power_failed |= axp_set_sw(IS_ENABLED(CONFIG_AXP_SW_ON));
+ #endif
+ #endif	/* CONFIG_AXPxxx_POWER */
+--- a/drivers/power/Kconfig
++++ b/drivers/power/Kconfig
+@@ -133,6 +133,14 @@ config AXP818_POWER
+ 	Say y here to enable support for the axp818 pmic found on
+ 	A83T dev board.
+ 
++config AXP15060_POWER
++	bool "axp15060 pmic support"
++	depends on MACH_SUN50I_H616
++	select AXP_PMIC_BUS
++	---help---
++	Say y here to enable support for the axp15060 (aka axp853t) pmic found on
++	T507 dev board.
++
+ config SY8106A_POWER
+ 	bool "SY8106A pmic support"
+ 	depends on MACH_SUNXI_H3_H5
+@@ -144,7 +152,7 @@ endchoice
+ 
+ config AXP_DCDC1_VOLT
+ 	int "axp pmic dcdc1 voltage"
+-	depends on AXP221_POWER || AXP809_POWER || AXP818_POWER
++	depends on AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP15060_POWER
+ 	default 3300 if AXP818_POWER || MACH_SUN8I_R40
+ 	default 3000 if MACH_SUN6I || MACH_SUN8I || MACH_SUN9I
+ 	---help---
+@@ -158,7 +166,7 @@ config AXP_DCDC1_VOLT
+ 
+ config AXP_DCDC2_VOLT
+ 	int "axp pmic dcdc2 voltage"
+-	depends on AXP152_POWER || AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP313_POWER || AXP717_POWER
++	depends on AXP152_POWER || AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP313_POWER || AXP717_POWER || AXP15060_POWER
+ 	default 900 if AXP818_POWER
+ 	default 1400 if AXP152_POWER || AXP209_POWER
+ 	default 1000 if AXP313_POWER
+@@ -179,7 +187,7 @@ config AXP_DCDC2_VOLT
+ 
+ config AXP_DCDC3_VOLT
+ 	int "axp pmic dcdc3 voltage"
+-	depends on AXP152_POWER || AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP313_POWER || AXP717_POWER
++	depends on AXP152_POWER || AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP313_POWER || AXP717_POWER || AXP15060_POWER
+ 	default 900 if AXP809_POWER || AXP818_POWER
+ 	default 1500 if AXP152_POWER
+ 	default 1250 if AXP209_POWER
+@@ -201,7 +209,7 @@ config AXP_DCDC3_VOLT
+ 
+ config AXP_DCDC4_VOLT
+ 	int "axp pmic dcdc4 voltage"
+-	depends on AXP152_POWER || AXP221_POWER || AXP809_POWER || AXP305_POWER
++	depends on AXP152_POWER || AXP221_POWER || AXP809_POWER || AXP305_POWER || AXP15060_POWER
+ 	default 1250 if AXP152_POWER
+ 	default 1200 if MACH_SUN6I
+ 	default 0 if MACH_SUN8I
+@@ -219,7 +227,7 @@ config AXP_DCDC4_VOLT
+ 
+ config AXP_DCDC5_VOLT
+ 	int "axp pmic dcdc5 voltage"
+-	depends on AXP221_POWER || AXP809_POWER || AXP818_POWER
++	depends on AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP15060_POWER
+ 	default 1500 if MACH_SUN6I || MACH_SUN8I || MACH_SUN9I
+ 	---help---
+ 	Set the voltage (mV) to program the axp pmic dcdc5 at, set to 0 to
+@@ -229,7 +237,7 @@ config AXP_DCDC5_VOLT
+ 
+ config AXP_ALDO1_VOLT
+ 	int "axp pmic (a)ldo1 voltage"
+-	depends on AXP221_POWER || AXP809_POWER || AXP818_POWER
++	depends on AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP15060_POWER
+ 	default 0 if MACH_SUN6I || MACH_SUN8I_R40
+ 	default 1800 if MACH_SUN8I_A83T
+ 	default 3000 if MACH_SUN8I || MACH_SUN9I
+@@ -244,7 +252,7 @@ config AXP_ALDO1_VOLT
+ 
+ config AXP_ALDO2_VOLT
+ 	int "axp pmic (a)ldo2 voltage"
+-	depends on AXP152_POWER || AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER
++	depends on AXP152_POWER || AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP15060_POWER
+ 	default 3000 if AXP152_POWER || AXP209_POWER
+ 	default 0 if MACH_SUN6I || MACH_SUN9I
+ 	default 1800 if MACH_SUN8I_A83T
+@@ -262,7 +270,7 @@ config AXP_ALDO2_VOLT
+ 
+ config AXP_ALDO3_VOLT
+ 	int "axp pmic (a)ldo3 voltage"
+-	depends on AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER
++	depends on AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP15060_POWER
+ 	default 0 if AXP209_POWER || MACH_SUN9I
+ 	default 3000 if MACH_SUN6I || MACH_SUN8I
+ 	---help---
+@@ -319,7 +327,7 @@ config AXP_ALDO3_INRUSH_QUIRK
+ 
+ config AXP_ALDO4_VOLT
+ 	int "axp pmic (a)ldo4 voltage"
+-	depends on AXP209_POWER
++	depends on AXP209_POWER || AXP15060_POWER
+ 	default 0 if AXP209_POWER
+ 	---help---
+ 	Set the voltage (mV) to program the axp pmic aldo4 at, set to 0 to
+@@ -419,7 +427,7 @@ config AXP_FLDO3_VOLT
+ 
+ config AXP_SW_ON
+ 	bool "axp pmic sw on"
+-	depends on AXP809_POWER || AXP818_POWER
++	depends on AXP809_POWER || AXP818_POWER || AXP15060_POWER
+ 	---help---
+ 	Enable to turn on axp pmic sw.
+ 
+--- a/drivers/power/Makefile
++++ b/drivers/power/Makefile
+@@ -18,6 +18,7 @@ obj-$(CONFIG_AXP717_POWER)	+= axp_spl.o
+ obj-$(CONFIG_AXP809_POWER)	+= axp809.o
+ obj-$(CONFIG_AXP818_POWER)	+= axp818.o
+ endif
++obj-$(CONFIG_AXP15060_POWER) += axp15060.o
+ obj-$(CONFIG_EXYNOS_TMU)	+= exynos-tmu.o
+ obj-$(CONFIG_SY8106A_POWER)	+= sy8106a.o
+ obj-$(CONFIG_TPS6586X_POWER)	+= tps6586x.o
+--- /dev/null
++++ b/drivers/power/axp15060.c
+@@ -0,0 +1,195 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * AXP15060 driver based on AXP221 driver
++ *
++ *
++ * (C) Copyright 2023 Nikita Maslov <nikita.maslov@wirenboard.ru>
++ *
++ * Based on axp221.c
++ * (C) Copyright 2014 Hans de Goede <hdegoede@redhat.com>
++ * (C) Copyright 2013 Oliver Schinagl <oliver@schinagl.nl>
++ */
++
++#include <command.h>
++#include <errno.h>
++#include <asm/arch/pmic_bus.h>
++#include <axp_pmic.h>
++
++static u8 axp15060_mvolt_to_cfg(int mvolt, int min, int max, int div)
++{
++	if (mvolt < min)
++		mvolt = min;
++	else if (mvolt > max)
++		mvolt = max;
++
++	return (mvolt - min) / div;
++}
++
++int axp_set_dcdc1(unsigned int mvolt)
++{
++	int ret;
++	u8 cfg = axp15060_mvolt_to_cfg(mvolt, 1500, 3400, 100);
++
++	if (mvolt == 0)
++		return pmic_bus_clrbits(AXP15060_OUTPUT_CTRL1,
++					AXP15060_OUTPUT_CTRL1_DCDC1_EN);
++
++	ret = pmic_bus_write(AXP15060_DCDC1_CTRL, cfg);
++	if (ret)
++		return ret;
++
++	return pmic_bus_setbits(AXP15060_OUTPUT_CTRL1,
++				AXP15060_OUTPUT_CTRL1_DCDC1_EN);
++}
++
++int axp_set_dcdc2(unsigned int mvolt)
++{
++	int ret;
++	u8 cfg = axp15060_mvolt_to_cfg(mvolt, 500, 1540, 10);
++
++	if (cfg >= 70)
++		cfg = 70 + (cfg - 70) * 2;
++
++	if (mvolt == 0)
++		return pmic_bus_clrbits(AXP15060_OUTPUT_CTRL1,
++					AXP15060_OUTPUT_CTRL1_DCDC2_EN);
++
++	ret = pmic_bus_write(AXP15060_DCDC2_CTRL, cfg);
++	if (ret)
++		return ret;
++
++	return pmic_bus_setbits(AXP15060_OUTPUT_CTRL1,
++				AXP15060_OUTPUT_CTRL1_DCDC2_EN);
++}
++
++int axp_set_dcdc3(unsigned int mvolt)
++{
++	int ret;
++	u8 cfg = axp15060_mvolt_to_cfg(mvolt, 500, 1540, 10);
++
++	if (cfg >= 70)
++		cfg = 70 + (cfg - 70) * 2;
++
++	if (mvolt == 0)
++		return pmic_bus_clrbits(AXP15060_OUTPUT_CTRL1,
++					AXP15060_OUTPUT_CTRL1_DCDC3_EN);
++
++	ret = pmic_bus_write(AXP15060_DCDC3_CTRL, cfg);
++	if (ret)
++		return ret;
++
++	return pmic_bus_setbits(AXP15060_OUTPUT_CTRL1,
++				AXP15060_OUTPUT_CTRL1_DCDC3_EN);
++}
++
++int axp_set_dcdc4(unsigned int mvolt)
++{
++	int ret;
++	u8 cfg = axp15060_mvolt_to_cfg(mvolt, 500, 1540, 10);
++
++	if (cfg >= 70)
++		cfg = 70 + (cfg - 70) * 2;
++
++	if (mvolt == 0)
++		return pmic_bus_clrbits(AXP15060_OUTPUT_CTRL1,
++					AXP15060_OUTPUT_CTRL1_DCDC4_EN);
++
++	ret = pmic_bus_write(AXP15060_DCDC4_CTRL, cfg);
++	if (ret)
++		return ret;
++
++	return pmic_bus_setbits(AXP15060_OUTPUT_CTRL1,
++				AXP15060_OUTPUT_CTRL1_DCDC4_EN);
++}
++
++int axp_set_dcdc5(unsigned int mvolt)
++{
++	int ret;
++	u8 cfg = axp15060_mvolt_to_cfg(mvolt, 800, 1840, 10);
++
++	if (cfg >= 32)
++		cfg = 32 + (cfg - 32) * 2;
++
++	if (mvolt == 0)
++		return pmic_bus_clrbits(AXP15060_OUTPUT_CTRL1,
++					AXP15060_OUTPUT_CTRL1_DCDC5_EN);
++
++	ret = pmic_bus_write(AXP15060_DCDC5_CTRL, cfg);
++	if (ret)
++		return ret;
++
++	return pmic_bus_setbits(AXP15060_OUTPUT_CTRL1,
++				AXP15060_OUTPUT_CTRL1_DCDC5_EN);
++}
++
++int axp_set_aldo(int aldo_num, unsigned int mvolt)
++{
++	int ret;
++	u8 cfg;
++
++	if (aldo_num < 1 || aldo_num > 4)
++		return -EINVAL;
++
++	if (mvolt == 0)
++		return pmic_bus_clrbits(AXP15060_OUTPUT_CTRL2,
++				AXP15060_OUTPUT_CTRL2_ALDO1_EN << (aldo_num - 1));
++
++	cfg = axp15060_mvolt_to_cfg(mvolt, 700, 3300, 100);
++
++	if (aldo_num == 1)
++		ret = pmic_bus_write(AXP15060_ALDO1_CTRL, cfg);
++	else
++		ret = pmic_bus_write(AXP15060_ALDO2_CTRL + (aldo_num - 2), cfg);
++
++	if (ret)
++		return ret;
++
++	return pmic_bus_setbits(AXP15060_OUTPUT_CTRL2,
++				AXP15060_OUTPUT_CTRL2_ALDO1_EN << (aldo_num - 1));
++}
++
++/* TODO: re-work other AXP drivers to consolidate ALDO functions. */
++int axp_set_aldo1(unsigned int mvolt)
++{
++	return axp_set_aldo(1, mvolt);
++}
++
++int axp_set_aldo2(unsigned int mvolt)
++{
++	return axp_set_aldo(2, mvolt);
++}
++
++int axp_set_aldo3(unsigned int mvolt)
++{
++	return axp_set_aldo(3, mvolt);
++}
++
++int axp_set_aldo4(unsigned int mvolt)
++{
++	return axp_set_aldo(4, mvolt);
++}
++
++int axp_set_dldo(int dldo_num, unsigned int mvolt)
++{
++	return -1;  // unsupported
++}
++
++int axp_set_eldo(int eldo_num, unsigned int mvolt)
++{
++	return -1;  // unsupported
++}
++
++int axp_set_sw(bool on)
++{
++	if (on)
++		return pmic_bus_setbits(AXP15060_OUTPUT_CTRL3,
++					AXP15060_OUTPUT_CTRL3_SWOUT_EN);
++
++	return pmic_bus_clrbits(AXP15060_OUTPUT_CTRL3,
++				AXP15060_OUTPUT_CTRL3_SWOUT_EN);
++}
++
++int axp_init(void)
++{
++	return pmic_bus_init();
++}
+--- a/drivers/power/pmic/axp.c
++++ b/drivers/power/pmic/axp.c
+@@ -93,6 +93,7 @@ static const struct udevice_id axp_pmic_ids[] = {
+ 	{ .compatible = "x-powers,axp806", .data = AXP806_ID },
+ 	{ .compatible = "x-powers,axp809", .data = AXP809_ID },
+ 	{ .compatible = "x-powers,axp813", .data = AXP813_ID },
++	{ .compatible = "x-powers,axp15060", .data = AXP15060_ID },
+ 	{ }
+ };
+ 
+--- a/drivers/power/regulator/axp_regulator.c
++++ b/drivers/power/regulator/axp_regulator.c
+@@ -311,6 +311,30 @@ static const struct axp_regulator_plat axp813_regulators[] = {
+ 	{ }
+ };
+ 
++static const struct axp_regulator_plat axp15060_regulators[] = {
++	{ "dcdc1", 0x10, BIT(0), 0x13, 0x1f, 1500, 3400, 100, NA },
++	{ "dcdc2", 0x10, BIT(1), 0x14, 0x7f,  500, 1540,  10, 70 },
++	{ "dcdc3", 0x10, BIT(2), 0x15, 0x7f,  500, 1540,  10, 70 },
++	{ "dcdc4", 0x10, BIT(3), 0x16, 0x7f,  500, 1540,  10, 70 },
++	{ "dcdc5", 0x10, BIT(4), 0x17, 0x7f,  800, 1840,  10, 32 },
++	{ "dcdc6", 0x10, BIT(5), 0x18, 0x1f,  500, 3400, 100, NA },
++	{ "aldo1", 0x11, BIT(0), 0x19, 0x1f,  700, 3300, 100, NA },
++	{ "aldo2", 0x11, BIT(1), 0x20, 0x1f,  700, 3300, 100, NA },
++	{ "aldo3", 0x11, BIT(2), 0x21, 0x1f,  700, 3300, 100, NA },
++	{ "aldo4", 0x11, BIT(3), 0x22, 0x1f,  700, 3300, 100, NA },
++	{ "aldo5", 0x11, BIT(4), 0x23, 0x1f,  700, 3300, 100, NA },
++	{ "bldo1", 0x11, BIT(5), 0x24, 0x1f,  700, 3300, 100, NA },
++	{ "bldo2", 0x11, BIT(6), 0x25, 0x1f,  700, 3300, 100, NA },
++	{ "bldo3", 0x11, BIT(7), 0x26, 0x1f,  700, 3300, 100, NA },
++	{ "bldo4", 0x12, BIT(0), 0x27, 0x1f,  700, 3300, 100, NA },
++	{ "bldo5", 0x12, BIT(1), 0x28, 0x1f,  700, 3300, 100, NA },
++	{ "cldo1", 0x12, BIT(2), 0x29, 0x1f,  700, 3300, 100, NA },
++	{ "cldo2", 0x12, BIT(3), 0x2A, 0x1f,  700, 3300, 100, NA },
++	{ "cldo3", 0x12, BIT(4), 0x2B, 0x1f,  700, 3300, 100, NA },
++	{ "cldo4", 0x12, BIT(5), 0x2D, 0x1f,  700, 4200, 100, NA },
++	{ }
++};
++
+ static const struct axp_regulator_plat *const axp_regulators[] = {
+ 	[AXP152_ID]	= axp152_regulators,
+ 	[AXP202_ID]	= axp20x_regulators,
+@@ -323,6 +347,7 @@ static const struct axp_regulator_plat *const axp_regulators[] = {
+ 	[AXP806_ID]	= axp806_regulators,
+ 	[AXP809_ID]	= axp809_regulators,
+ 	[AXP813_ID]	= axp813_regulators,
++	[AXP15060_ID] = axp15060_regulators,
+ };
+ 
+ static int axp_regulator_bind(struct udevice *dev)
+--- /dev/null
++++ b/include/axp15060.h
+@@ -0,0 +1,51 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * (C) Copyright 2023 Nikita Maslov <nikita.maslov@wirenboard.ru>
++ *
++ * X-Powers AXP15060 Power Management IC driver
++ */
++
++#define AXP15060_OUTPUT_CTRL1	0x10
++#define AXP15060_OUTPUT_CTRL1_DCDC1_EN	(1 << 0)
++#define AXP15060_OUTPUT_CTRL1_DCDC2_EN	(1 << 1)
++#define AXP15060_OUTPUT_CTRL1_DCDC3_EN	(1 << 2)
++#define AXP15060_OUTPUT_CTRL1_DCDC4_EN	(1 << 3)
++#define AXP15060_OUTPUT_CTRL1_DCDC5_EN	(1 << 4)
++#define AXP15060_OUTPUT_CTRL1_DCDC6_EN	(1 << 5)
++
++#define AXP15060_OUTPUT_CTRL2	0x11
++#define AXP15060_OUTPUT_CTRL2_ALDO1_EN	(1 << 0)
++#define AXP15060_OUTPUT_CTRL2_ALDO2_EN	(1 << 1)
++#define AXP15060_OUTPUT_CTRL2_ALDO3_EN	(1 << 2)
++
++#define AXP15060_OUTPUT_CTRL3	0x12
++#define AXP15060_OUTPUT_CTRL3_SWOUT_EN	(1 << 7)
++
++#define AXP15060_DCDC1_CTRL	0x13
++#define AXP15060_DCDC2_CTRL	0x14
++#define AXP15060_DCDC3_CTRL	0x15
++#define AXP15060_DCDC4_CTRL	0x16
++#define AXP15060_DCDC5_CTRL	0x17
++#define AXP15060_ALDO1_CTRL	0x19
++#define AXP15060_ALDO2_CTRL	0x20
++#define AXP15060_ALDO3_CTRL	0x21
++#define AXP15060_ALDO4_CTRL	0x22
++
++/* For axp_gpio.c */
++#ifdef CONFIG_AXP15060_POWER
++#define AXP_POWER_STATUS		0x00
++#define AXP_POWER_STATUS_ALDO_IN		BIT(0)
++
++// bullshit there, just don't turn on gpio
++#define AXP_VBUS_IPSOUT			0x30
++#define AXP_VBUS_IPSOUT_DRIVEBUS		(1 << 2)
++#define AXP_MISC_CTRL			0x8f
++#define AXP_MISC_CTRL_N_VBUSEN_FUNC		(1 << 4)
++#define AXP_GPIO0_CTRL			0x90
++#define AXP_GPIO1_CTRL			0x92
++#define AXP_GPIO_CTRL_OUTPUT_LOW	0x00 /* Drive pin low */
++#define AXP_GPIO_CTRL_OUTPUT_HIGH	0x01 /* Drive pin high */
++#define AXP_GPIO_CTRL_INPUT		0x02 /* Input */
++#define AXP_GPIO_STATE			0x94
++#define AXP_GPIO_STATE_OFFSET		0
++#endif
+--- a/include/axp_pmic.h
++++ b/include/axp_pmic.h
+@@ -15,6 +15,7 @@
+ #include <axp305.h>
+ #include <axp809.h>
+ #include <axp818.h>
++#include <axp15060.h>
+ 
+ #define AXP_PMIC_MODE_REG		0x3e
+ #define AXP_PMIC_MODE_I2C		0x00
+@@ -38,6 +39,7 @@ enum {
+ 	AXP806_ID,
+ 	AXP809_ID,
+ 	AXP813_ID,
++	AXP15060_ID,
+ };
+ 
+ int axp_set_dcdc1(unsigned int mvolt);

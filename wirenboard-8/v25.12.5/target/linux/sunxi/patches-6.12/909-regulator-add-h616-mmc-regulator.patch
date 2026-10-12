@@ -1,0 +1,143 @@
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -431,6 +431,15 @@ config REGULATOR_GPIO
+ 	  and the platform has to provide a mapping of GPIO-states
+ 	  to target volts/amps.
+ 
++config REGULATOR_H616_MMC
++	tristate "Allwinner H616 microSD I/O voltage regulator"
++	depends on ARCH_SUNXI || COMPILE_TEST
++	select MFD_SYSCON
++	help
++	  This driver supports the internal regulator of the Allwinner H616
++	  PF port, switching the microSD I/O voltage between 3.3 V and 1.8 V
++	  as required by the SD UHS modes.
++
+ config REGULATOR_HI6421
+ 	tristate "HiSilicon Hi6421 PMIC voltage regulator support"
+ 	depends on MFD_HI6421_PMIC && OF
+--- a/drivers/regulator/Makefile
++++ b/drivers/regulator/Makefile
+@@ -51,6 +51,7 @@ obj-$(CONFIG_REGULATOR_DB8500_PRCMU) += db8500-prcmu.o
+ obj-$(CONFIG_REGULATOR_FAN53555) += fan53555.o
+ obj-$(CONFIG_REGULATOR_FAN53880) += fan53880.o
+ obj-$(CONFIG_REGULATOR_GPIO) += gpio-regulator.o
++obj-$(CONFIG_REGULATOR_H616_MMC) += h616-mmc-regulator.o
+ obj-$(CONFIG_REGULATOR_HI6421) += hi6421-regulator.o
+ obj-$(CONFIG_REGULATOR_HI6421V530) += hi6421v530-regulator.o
+ obj-$(CONFIG_REGULATOR_HI6421V600) += hi6421v600-regulator.o
+--- /dev/null
++++ b/drivers/regulator/h616-mmc-regulator.c
+@@ -0,0 +1,112 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Allwinner H616 PF port (microSD) I/O voltage regulator
++ *
++ * Copyright (c) 2024 Anton Tarasov <anton.tarasov@wirenboard.com>
++ */
++
++#include <linux/bits.h>
++#include <linux/mfd/syscon.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/regulator/driver.h>
++#include <linux/regulator/of_regulator.h>
++
++#define PIO_POW_MOD_SEL		0x340
++#define PIO_POW_MOD_SEL_PF	BIT(5)
++
++#define PIO_PV_SEL_CTL		0x350
++#define PIO_PV_SEL_CTL_PF	BIT(0)
++
++static const unsigned int h616_mmc_regulator_volt_table[] = {
++	1800000,
++	3300000,
++};
++
++/*
++ * The withstand voltage mode of the port must never be lower than the
++ * port voltage: leave 1.8 V mode before raising the voltage, enter it
++ * after lowering the voltage.
++ */
++static int h616_mmc_regulator_set_voltage_sel(struct regulator_dev *rdev,
++					      unsigned int sel)
++{
++	struct regmap *regmap = rdev_get_regmap(rdev);
++	int ret;
++
++	if (sel) {
++		ret = regmap_clear_bits(regmap, PIO_POW_MOD_SEL, PIO_POW_MOD_SEL_PF);
++		if (ret)
++			return ret;
++
++		return regmap_set_bits(regmap, PIO_PV_SEL_CTL, PIO_PV_SEL_CTL_PF);
++	}
++
++	ret = regmap_clear_bits(regmap, PIO_PV_SEL_CTL, PIO_PV_SEL_CTL_PF);
++	if (ret)
++		return ret;
++
++	return regmap_set_bits(regmap, PIO_POW_MOD_SEL, PIO_POW_MOD_SEL_PF);
++}
++
++static const struct regulator_ops h616_mmc_regulator_ops = {
++	.list_voltage = regulator_list_voltage_table,
++	.map_voltage = regulator_map_voltage_ascend,
++	.get_voltage_sel = regulator_get_voltage_sel_regmap,
++	.set_voltage_sel = h616_mmc_regulator_set_voltage_sel,
++};
++
++static const struct regulator_desc h616_mmc_regulator_desc = {
++	.name = "h616-mmc-vqmmc",
++	.type = REGULATOR_VOLTAGE,
++	.owner = THIS_MODULE,
++	.ops = &h616_mmc_regulator_ops,
++	.n_voltages = ARRAY_SIZE(h616_mmc_regulator_volt_table),
++	.volt_table = h616_mmc_regulator_volt_table,
++	.vsel_reg = PIO_PV_SEL_CTL,
++	.vsel_mask = PIO_PV_SEL_CTL_PF,
++};
++
++static int h616_mmc_regulator_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct regulator_config config = {};
++	struct regulator_dev *rdev;
++	struct regmap *regmap;
++
++	regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "syscon");
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap), "failed to get syscon\n");
++
++	config.dev = dev;
++	config.of_node = dev->of_node;
++	config.regmap = regmap;
++	config.init_data = of_get_regulator_init_data(dev, dev->of_node,
++						      &h616_mmc_regulator_desc);
++	if (!config.init_data)
++		return -ENOMEM;
++
++	rdev = devm_regulator_register(dev, &h616_mmc_regulator_desc, &config);
++
++	return PTR_ERR_OR_ZERO(rdev);
++}
++
++static const struct of_device_id h616_mmc_regulator_of_match[] = {
++	{ .compatible = "allwinner,h616-mmc-regulator" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, h616_mmc_regulator_of_match);
++
++static struct platform_driver h616_mmc_regulator_driver = {
++	.probe = h616_mmc_regulator_probe,
++	.driver = {
++		.name = "h616-mmc-regulator",
++		.of_match_table = h616_mmc_regulator_of_match,
++	},
++};
++module_platform_driver(h616_mmc_regulator_driver);
++
++MODULE_DESCRIPTION("Allwinner H616 microSD I/O voltage regulator");
++MODULE_LICENSE("GPL");

@@ -1,0 +1,9 @@
+#!/bin/sh /etc/rc.common
+
+STOP=01
+
+stop() {
+	echo none > /sys/class/leds/green:status/trigger
+	echo 0 > /sys/class/leds/green:status/brightness
+	echo timer > /sys/class/leds/red:status/trigger
+}
