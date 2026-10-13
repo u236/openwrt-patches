@@ -25,6 +25,7 @@ Select target profile:
 
 Configure built-in kernel modules:
 ```
+<*> Kernel Modules > Bluetooth Support > kmod-btusb
 <*> Kernel Modules > USB Support > kmod-usb-net-rndis
 <*> Kernel Modules > USB Support > kmod-usb-serial-option
 <*> Kernel Modules > W1 support > kmod-w1
@@ -41,6 +42,7 @@ Configure built-in packages:
 <*> Utilities > Filesystem > resize2fs
 <*> Utilities > Filesystem > tune2fs
 <*> Utilities > Terminal > picocom
+<*> Utilities > bluez-daemon
 <*> Utilities > mc
     ...
     Something else
