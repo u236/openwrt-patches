@@ -10,9 +10,10 @@
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-orangepi-zero2w.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-wirenboard85x.dts
-@@ -0,0 +1,734 @@
+@@ -0,0 +1,745 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
 +#include <dt-bindings/interrupt-controller/arm-gic.h>
 +#include "sun50i-h616.dtsi"
 +#include "sun50i-h616-cpu-opp.dtsi"
@@ -234,6 +235,16 @@
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +		status = "disabled";
++	};
++
++	keys {
++		compatible = "gpio-keys";
++
++		key-fw {
++			label = "fw";
++			gpios = <&pio 7 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
++			linux,code = <KEY_RESTART>;
++		};
 +	};
 +
 +	leds {

@@ -108,7 +108,7 @@ TARGET_DEVICES += pine64_sopine-baseboard
 define Device/wirenboard_wirenboard85x
   DEVICE_VENDOR := Wiren Board
   DEVICE_MODEL := 8.5
-  DEVICE_PACKAGES := kmod-button-hotplug usbgadget-ncm
+  DEVICE_PACKAGES := kmod-button-hotplug kmod-gpio-button-hotplug usbgadget-ncm
   SUPPORTED_DEVICES := wirenboard,wirenboard-85x
   $(Device/sun50i-h616)
 endef
