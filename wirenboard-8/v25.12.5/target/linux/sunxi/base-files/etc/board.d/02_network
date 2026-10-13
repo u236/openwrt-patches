@@ -21,7 +21,7 @@ sunxi_setup_interfaces()
 		ucidef_set_interface_lan "wlan0"
 		;;
 	wirenboard,wirenboard-85x)
-		ucidef_set_interfaces_lan_wan "eth0 usb0" "eth1"
+		ucidef_set_interface_lan "eth0 eth1 usb0"
 		;;
 	xunlong,orangepi-r1)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"

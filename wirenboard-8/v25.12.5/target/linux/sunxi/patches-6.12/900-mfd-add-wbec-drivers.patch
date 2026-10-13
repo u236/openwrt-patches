@@ -2561,7 +2561,7 @@
 +}
 +
 +static const struct serial_rs485 wbec_uart_rs485_supported = {
-+	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX,
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX,
 +};
 +
 +static struct uart_driver wbec_uart_driver = {

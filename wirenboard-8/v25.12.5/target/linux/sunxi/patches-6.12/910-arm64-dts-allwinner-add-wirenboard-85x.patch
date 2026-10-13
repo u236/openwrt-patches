@@ -10,7 +10,7 @@
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-orangepi-zero2w.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-wirenboard85x.dts
-@@ -0,0 +1,728 @@
+@@ -0,0 +1,734 @@
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -671,11 +671,13 @@
 +		serial@0 {
 +			compatible = "wirenboard,wbec-uart";
 +			reg = <0>;
++			linux,rs485-enabled-at-boot-time;
 +		};
 +
 +		serial@1 {
 +			compatible = "wirenboard,wbec-uart";
 +			reg = <1>;
++			linux,rs485-enabled-at-boot-time;
 +		};
 +	};
 +};
@@ -716,6 +718,8 @@
 +	/delete-property/ dmas;
 +	/delete-property/ dma-names;
 +	cts-override;
++	rts-gpios = <&pio 8 15 GPIO_ACTIVE_HIGH>;
++	linux,rs485-enabled-at-boot-time;
 +	status = "okay";
 +};
 +
@@ -726,6 +730,8 @@
 +	/delete-property/ dmas;
 +	/delete-property/ dma-names;
 +	cts-override;
++	rts-gpios = <&pio 3 10 GPIO_ACTIVE_HIGH>;
++	linux,rs485-enabled-at-boot-time;
 +	status = "okay";
 +};
 +

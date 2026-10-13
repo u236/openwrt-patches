@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "$DEVPATH" in
+*/5000800.serial/*)  link=ttyRS485-1 ;;
+*/5000400.serial/*)  link=ttyRS485-2 ;;
+*:wbec@0:serial@0/*) link=ttyMOD1 ;;
+*:wbec@0:serial@1/*) link=ttyMOD2 ;;
+*/5001000.serial/*)  link=ttyMOD3 ;;
+*/5001400.serial/*)  link=ttyMOD4 ;;
+*) exit 0 ;;
+esac
+
+case "$ACTION" in
+add) ln -sf "$DEVNAME" "/dev/$link" ;;
+remove) rm -f "/dev/$link" ;;
+esac

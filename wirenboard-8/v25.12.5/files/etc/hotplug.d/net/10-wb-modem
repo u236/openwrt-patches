@@ -1,0 +1,7 @@
+#!/bin/sh
+
+[ "$ACTION" = add ] || exit 0
+
+case "$DEVPATH" in
+*/5310000.usb/usb*/*-1:1.0/net/*) ip link set "$INTERFACE" name wwan0 ;;
+esac

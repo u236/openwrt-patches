@@ -4,7 +4,6 @@ START=11
 
 boot() {
 	[ "$(cat /sys/class/gpio/modem:status/value)" = 1 ] && return 0
-
 	(
 		sleep 1
 		echo 1 > /sys/class/gpio/modem:switch/value

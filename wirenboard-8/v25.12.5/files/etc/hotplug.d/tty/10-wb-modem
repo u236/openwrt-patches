@@ -1,0 +1,12 @@
+#!/bin/sh
+
+[ "$ACTION" = add ] || exit 0
+
+case "$DEVPATH" in
+*/5310000.usb/usb*/*-1:1.5/tty*)
+	(
+		sleep 5
+		printf 'AT+DIALMODE=0\r' > /dev/$DEVNAME
+	) &
+	;;
+esac
