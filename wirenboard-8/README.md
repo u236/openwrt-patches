@@ -26,6 +26,8 @@ Select target profile:
 Configure built-in kernel modules:
 ```
 <*> Kernel Modules > Bluetooth Support > kmod-btusb
+<*> Kernel Modules > GPIO support > kmod-gpio-button-hotplug
+<*> Kernel Modules > Other modules > kmod-button-hotplug
 <*> Kernel Modules > USB Support > kmod-usb-net-rndis
 <*> Kernel Modules > USB Support > kmod-usb-serial-option
 <*> Kernel Modules > W1 support > kmod-w1
@@ -44,6 +46,7 @@ Configure built-in packages:
 <*> Utilities > Terminal > picocom
 <*> Utilities > bluez-daemon
 <*> Utilities > mc
+<*> Utilities > usbgadget-ncm
     ...
     Something else
 ```
