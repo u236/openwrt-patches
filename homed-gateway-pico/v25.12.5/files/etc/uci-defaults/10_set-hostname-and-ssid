@@ -9,4 +9,4 @@ uci set wireless.@wifi-iface[0].ssid=${hostname}
 uci set wireless.radio0.disabled='0'
 uci commit wireless
 
-wifi
+exit 0
